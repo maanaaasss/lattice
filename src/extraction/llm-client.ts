@@ -37,10 +37,22 @@ export class OpenAICompatibleClient implements LLMClient {
       );
     }
 
-    const data = (await response.json()) as {
-      choices: { message: { content: string } }[];
-    };
+    const data = await response.json();
+    const preview = JSON.stringify(data).slice(0, 500);
 
-    return data.choices[0].message.content;
+    if (!Array.isArray(data.choices) || data.choices.length === 0) {
+      throw new Error(
+        `LLM response missing or empty "choices" array. Response body: ${preview}`
+      );
+    }
+
+    const choice = data.choices[0];
+    if (!choice.message || typeof choice.message.content !== "string") {
+      throw new Error(
+        `LLM response choices[0].message.content is missing or not a string. Response body: ${preview}`
+      );
+    }
+
+    return choice.message.content;
   }
 }
