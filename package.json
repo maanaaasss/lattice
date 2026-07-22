@@ -7,7 +7,8 @@
     "build": "tsc",
     "test": "vitest run",
     "test:watch": "vitest",
-    "smoke": "tsx scripts/smoke-test.ts"
+    "smoke": "tsx scripts/smoke-test.ts",
+    "smoke:direction": "tsx scripts/smoke-test.ts --direction-only"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

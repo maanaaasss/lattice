@@ -5,6 +5,7 @@
  * Usage:
  *   npm run smoke                      # uses embedded default text
  *   npm run smoke -- path/to/file.txt  # uses file contents
+ *   npm run smoke:direction            # runs only the directionality check
  *
  * Requires LLM_API_KEY, LLM_BASE_URL, LLM_MODEL in the environment.
  * To load from .env without dotenv:
@@ -44,7 +45,13 @@ async function main() {
     ? readFileSync(process.argv[2], "utf-8")
     : DEFAULT_TEXT;
 
+  const directionOnly = process.argv.slice(2).includes("--direction-only");
   const client = new OpenAICompatibleClient({ baseUrl, apiKey, model });
+
+  if (directionOnly) {
+    await runDirectionalityCheck(client);
+    return;
+  }
 
   // ── Segmentation ──
   console.log("--- Segmenting input text ---");
@@ -101,6 +108,10 @@ async function main() {
   console.log(JSON.stringify(llmEdges, null, 2));
 
   // ── Directionality check (always runs) ──
+  await runDirectionalityCheck(client);
+}
+
+async function runDirectionalityCheck(client: OpenAICompatibleClient) {
   console.log("\n========================================");
   console.log("--- REVISION DIRECTIONALITY CHECK ---");
   console.log("========================================");
