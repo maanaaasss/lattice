@@ -64,9 +64,10 @@ export function assembleSemanticIR(
   // Empirically confirmed: real smoke-test runs produced 1 correct / 2
   // backwards results when this rule was left to the prompt alone.
   // The correct direction is source.span_location.start > target.span_location.start
-  // (source = the later, revising node). If the LLM got it wrong, swap.
-  for (const edge of llmEdges) {
-    if (edge.relation !== "revises") continue;
+  // (source = the later, revising node). If the LLM got it wrong, produce
+  // a new edge with the ids swapped — do not mutate the original object.
+  const correctedLlmEdges = llmEdges.map((edge) => {
+    if (edge.relation !== "revises") return edge;
 
     const srcNode = nodeMap.get(edge.source_node_id);
     if (!srcNode) {
@@ -83,13 +84,17 @@ export function assembleSemanticIR(
 
     if (srcNode.span_location.start < tgtNode.span_location.start) {
       // Source is earlier than target — direction is backwards. Swap.
-      const tmp = edge.source_node_id;
-      edge.source_node_id = edge.target_node_id;
-      edge.target_node_id = tmp;
+      return {
+        ...edge,
+        source_node_id: edge.target_node_id,
+        target_node_id: edge.source_node_id,
+      };
     }
-  }
 
-  const edges: SemanticEdge[] = [...precedesEdges, ...llmEdges];
+    return edge;
+  });
+
+  const edges: SemanticEdge[] = [...precedesEdges, ...correctedLlmEdges];
 
   const ir: SemanticIR = {
     document_id: documentId,

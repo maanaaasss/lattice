@@ -117,6 +117,22 @@ describe("assembleSemanticIR", () => {
 
     expect(result.success).toBe(true);
   });
+
+  it("does not mutate the original edge objects in the llmEdges array", () => {
+    const original = makeEdge("rev-1", "n-early", "n-late", "revises");
+    const llm: SemanticEdge[] = [original];
+
+    const ir = assembleSemanticIR(nodes, [], llm, "doc-1");
+
+    // The IR's edge should be correctly swapped
+    const revEdge = ir.edges.find((e) => e.relation === "revises")!;
+    expect(revEdge.source_node_id).toBe("n-late");
+    expect(revEdge.target_node_id).toBe("n-early");
+
+    // But the ORIGINAL object must remain untouched
+    expect(original.source_node_id).toBe("n-early");
+    expect(original.target_node_id).toBe("n-late");
+  });
 });
 
 describe("SemanticIRSchema strictness", () => {
