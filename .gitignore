@@ -1,6 +1,7 @@
 node_modules/
 dist/
 output/
+obsidian-plugin/main.js
 .env
 .env.local
 *.tsbuildinfo
