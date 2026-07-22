@@ -12,7 +12,8 @@
  *   node --env-file=.env --import tsx scripts/smoke-test.ts
  */
 
-import { readFileSync } from "node:fs";
+import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { segmentText } from "../src/segmentation/segment.js";
 import { OpenAICompatibleClient } from "../src/extraction/llm-client.js";
 import { classifySegments } from "../src/extraction/classify.js";
@@ -21,6 +22,7 @@ import {
   detectRevisionCandidates,
 } from "../src/extraction/relations-rule-based.js";
 import { extractRelations } from "../src/extraction/extract-relations.js";
+import { assembleSemanticIR } from "../src/pipeline/assemble.js";
 
 const DEFAULT_TEXT =
   'The library opens at nine each morning. Dr. Chen believes early mornings are the best time to study. She decided to arrive an hour before opening to secure a quiet seat. Yesterday, the fire alarm went off during her exam and everyone had to evacuate. It was frustrating, but she stayed calm and finished the test an hour later.';
@@ -106,6 +108,18 @@ async function main() {
 
   console.log("\n--- Full LLM edges output ---");
   console.log(JSON.stringify(llmEdges, null, 2));
+
+  // ── Assemble final SemanticIR ──
+  console.log("\n--- Assembling SemanticIR ---");
+  const ir = assembleSemanticIR(nodes, precedesEdges, llmEdges, "smoke-test-doc");
+  console.log(`Total nodes: ${ir.nodes.length}`);
+  console.log(`Total edges: ${ir.edges.length}`);
+
+  const outDir = resolve(import.meta.dirname, "..", "output");
+  mkdirSync(outDir, { recursive: true });
+  const outPath = resolve(outDir, "smoke-ir.json");
+  writeFileSync(outPath, JSON.stringify(ir, null, 2));
+  console.log(`Wrote IR to: ${outPath}`);
 
   // ── Directionality check (always runs) ──
   await runDirectionalityCheck(client);
