@@ -41,10 +41,6 @@ async function main() {
   const baseUrl = process.env.LLM_BASE_URL!;
   const model = process.env.LLM_MODEL!;
 
-  const inputText = process.argv[2]
-    ? readFileSync(process.argv[2], "utf-8")
-    : DEFAULT_TEXT;
-
   const directionOnly = process.argv.slice(2).includes("--direction-only");
   const client = new OpenAICompatibleClient({ baseUrl, apiKey, model });
 
@@ -52,6 +48,10 @@ async function main() {
     await runDirectionalityCheck(client);
     return;
   }
+
+  const inputText = process.argv[2]
+    ? readFileSync(process.argv[2], "utf-8")
+    : DEFAULT_TEXT;
 
   // ── Segmentation ──
   console.log("--- Segmenting input text ---");
