@@ -19,6 +19,9 @@ const ABBREVIATIONS = new Set([
 
 const SENTENCE_BOUNDARY_RE = /[.!?]["'\u201d\u2019]?(?:\s+|$)/g;
 
+const MARKDOWN_PREFIX_RE =
+  /^(?:>+\s*|(?:[-*+]\s+(?:\[[ xX]\]\s+)?)|\d+[.)]\s+|#{1,6}\s+)/;
+
 function isAbbreviation(textBefore: string): boolean {
   const words = textBefore.trimEnd().split(/\s+/);
   const lastWord = words[words.length - 1] ?? "";
@@ -73,9 +76,16 @@ export function segmentText(rawText: string): RawSegment[] {
 
     const trimmedPara = para.replace(/^\n+/, "");
     const leadingNewlines = para.length - trimmedPara.length;
-    globalOffset += leadingNewlines;
 
-    const sentences = splitSentences(trimmedPara);
+    const prefixMatch = trimmedPara.match(MARKDOWN_PREFIX_RE);
+    const contentPara = prefixMatch
+      ? trimmedPara.slice(prefixMatch[0].length)
+      : trimmedPara;
+    const prefixLen = prefixMatch ? prefixMatch[0].length : 0;
+
+    globalOffset += leadingNewlines + prefixLen;
+
+    const sentences = splitSentences(contentPara);
 
     let localOffset = 0;
     for (const sentence of sentences) {
@@ -99,7 +109,7 @@ export function segmentText(rawText: string): RawSegment[] {
       localOffset += sentence.length;
     }
 
-    globalOffset += trimmedPara.length;
+    globalOffset += contentPara.length;
   }
 
   return segments;

@@ -77,4 +77,118 @@ describe("segmentText", () => {
     expect(segs[0].start).toBe(0);
     expect(segs[0].end).toBe(input.length);
   });
+
+  it("strips blockquote prefix and preserves offset invariant", () => {
+    const input = "> This is quoted. And another sentence.";
+    const segs = segmentText(input);
+
+    expect(segs).toHaveLength(2);
+    expect(segs[0].text).toBe("This is quoted.");
+    expect(segs[0].text).not.toMatch(/^>/);
+    for (const seg of segs) {
+      expect(input.slice(seg.start, seg.end)).toBe(seg.text);
+    }
+  });
+
+  it("strips bullet prefix and preserves offset invariant", () => {
+    const input = "- First item. Second sentence.";
+    const segs = segmentText(input);
+
+    expect(segs).toHaveLength(2);
+    expect(segs[0].text).toBe("First item.");
+    expect(segs[0].text).not.toMatch(/^-/);
+    for (const seg of segs) {
+      expect(input.slice(seg.start, seg.end)).toBe(seg.text);
+    }
+  });
+
+  it("strips unchecked checkbox prefix and preserves offset invariant", () => {
+    const input = "- [ ] Task to do. Another task.";
+    const segs = segmentText(input);
+
+    expect(segs).toHaveLength(2);
+    expect(segs[0].text).toBe("Task to do.");
+    expect(segs[0].text).not.toMatch(/^\[/);
+    for (const seg of segs) {
+      expect(input.slice(seg.start, seg.end)).toBe(seg.text);
+    }
+  });
+
+  it("strips checked checkbox prefix and preserves offset invariant", () => {
+    const input = "- [x] Done task. Also done.";
+    const segs = segmentText(input);
+
+    expect(segs).toHaveLength(2);
+    expect(segs[0].text).toBe("Done task.");
+    expect(segs[0].text).not.toMatch(/^\[/);
+    for (const seg of segs) {
+      expect(input.slice(seg.start, seg.end)).toBe(seg.text);
+    }
+  });
+
+  it("strips numbered list prefix '1. ' and preserves offset invariant", () => {
+    const input = "1. First step. Next step.";
+    const segs = segmentText(input);
+
+    expect(segs).toHaveLength(2);
+    expect(segs[0].text).toBe("First step.");
+    expect(segs[0].text).not.toMatch(/^\d/);
+    for (const seg of segs) {
+      expect(input.slice(seg.start, seg.end)).toBe(seg.text);
+    }
+  });
+
+  it("strips numbered list prefix '2) ' and preserves offset invariant", () => {
+    const input = "2) Second item. Another sentence.";
+    const segs = segmentText(input);
+
+    expect(segs).toHaveLength(2);
+    expect(segs[0].text).toBe("Second item.");
+    expect(segs[0].text).not.toMatch(/^\d/);
+    for (const seg of segs) {
+      expect(input.slice(seg.start, seg.end)).toBe(seg.text);
+    }
+  });
+
+  it("strips heading prefix and preserves offset invariant", () => {
+    const input = "## A heading. With a second sentence.";
+    const segs = segmentText(input);
+
+    expect(segs).toHaveLength(2);
+    expect(segs[0].text).toBe("A heading.");
+    expect(segs[0].text).not.toMatch(/^#/);
+    for (const seg of segs) {
+      expect(input.slice(seg.start, seg.end)).toBe(seg.text);
+    }
+  });
+
+  it("produces identical output for plain text with no markdown prefix", () => {
+    const input = "No markdown here. Just plain text.\n\nSecond paragraph. Also plain.";
+    const segs = segmentText(input);
+
+    expect(segs).toHaveLength(4);
+    expect(segs[0].text).toBe("No markdown here.");
+    expect(segs[1].text).toBe("Just plain text.");
+    expect(segs[2].text).toBe("Second paragraph.");
+    expect(segs[3].text).toBe("Also plain.");
+    for (const seg of segs) {
+      expect(input.slice(seg.start, seg.end)).toBe(seg.text);
+    }
+  });
+
+  it("handles mixed paragraphs with and without markdown prefixes", () => {
+    const input = "Plain first. Second.\n\n> Quoted text. Another.\n\n1. Numbered item. Follow-up.";
+    const segs = segmentText(input);
+
+    expect(segs).toHaveLength(6);
+    expect(segs[0].text).toBe("Plain first.");
+    expect(segs[1].text).toBe("Second.");
+    expect(segs[2].text).toBe("Quoted text.");
+    expect(segs[3].text).toBe("Another.");
+    expect(segs[4].text).toBe("Numbered item.");
+    expect(segs[5].text).toBe("Follow-up.");
+    for (const seg of segs) {
+      expect(input.slice(seg.start, seg.end)).toBe(seg.text);
+    }
+  });
 });
