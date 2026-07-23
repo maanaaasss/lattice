@@ -183,6 +183,41 @@ describe("classifySegments", () => {
     );
   });
 
+  it("accepts explicit null subtype and normalizes to undefined", async () => {
+    const nullSubtypeResponse = JSON.stringify({
+      classifications: [
+        {
+          segment_id: "seg-0",
+          type: "Emotion",
+          subtype: null,
+          attribution: { type: "self", ref: null },
+          epistemic_confidence: null,
+        },
+        {
+          segment_id: "seg-1",
+          type: "Claim",
+          subtype: "Legal fact",
+          attribution: { type: "citation", ref: "Legal Aid Act" },
+          epistemic_confidence: 0.9,
+        },
+        {
+          segment_id: "seg-2",
+          type: "Decision",
+          attribution: { type: "self", ref: null },
+          epistemic_confidence: null,
+        },
+      ],
+    });
+
+    const client = mockClient(nullSubtypeResponse);
+    const nodes = await classifySegments(sampleSegments, "doc-1", client);
+
+    expect(nodes).toHaveLength(3);
+    expect(nodes[0].subtype).toBeUndefined();
+    expect(nodes[1].subtype).toBe("Legal fact");
+    expect(nodes[2].subtype).toBeUndefined();
+  });
+
   it("passes the system prompt to the client", async () => {
     let capturedSystem = "";
     let capturedUser = "";
