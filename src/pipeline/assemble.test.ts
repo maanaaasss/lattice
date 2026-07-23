@@ -133,6 +133,67 @@ describe("assembleSemanticIR", () => {
     expect(original.source_node_id).toBe("n-early");
     expect(original.target_node_id).toBe("n-late");
   });
+
+  it("swaps a backwards causes edge so source ends up earlier", () => {
+    // Edge points from late → early (backwards for source-earlier rule)
+    const backwards: SemanticEdge[] = [
+      makeEdge("c-1", "n-late", "n-early", "causes"),
+    ];
+
+    const ir = assembleSemanticIR(nodes, [], backwards, "doc-1");
+    const cEdge = ir.edges.find((e) => e.relation === "causes")!;
+
+    expect(cEdge.source_node_id).toBe("n-early");
+    expect(cEdge.target_node_id).toBe("n-late");
+  });
+
+  it("leaves a correctly-directed causes edge unchanged", () => {
+    // Edge points from early → late (correct for source-earlier rule)
+    const correct: SemanticEdge[] = [
+      makeEdge("c-1", "n-early", "n-late", "causes"),
+    ];
+
+    const ir = assembleSemanticIR(nodes, [], correct, "doc-1");
+    const cEdge = ir.edges.find((e) => e.relation === "causes")!;
+
+    expect(cEdge.source_node_id).toBe("n-early");
+    expect(cEdge.target_node_id).toBe("n-late");
+  });
+
+  it("swaps a backwards enables edge so source ends up earlier", () => {
+    const backwards: SemanticEdge[] = [
+      makeEdge("en-1", "n-late", "n-early", "enables"),
+    ];
+
+    const ir = assembleSemanticIR(nodes, [], backwards, "doc-1");
+    const enEdge = ir.edges.find((e) => e.relation === "enables")!;
+
+    expect(enEdge.source_node_id).toBe("n-early");
+    expect(enEdge.target_node_id).toBe("n-late");
+  });
+
+  it("does not touch a supports edge even with positions that would fail either directional check", () => {
+    // supports has no direction rule — must pass through unchanged regardless
+    const edge: SemanticEdge[] = [
+      makeEdge("s-1", "n-early", "n-late", "supports"),
+    ];
+
+    const ir = assembleSemanticIR(nodes, [], edge, "doc-1");
+    const sEdge = ir.edges.find((e) => e.relation === "supports")!;
+
+    expect(sEdge.source_node_id).toBe("n-early");
+    expect(sEdge.target_node_id).toBe("n-late");
+  });
+
+  it("throws if a causes edge references an unknown node id", () => {
+    const bad: SemanticEdge[] = [
+      makeEdge("c-1", "n-late", "n-nonexistent", "causes"),
+    ];
+
+    expect(() => assembleSemanticIR(nodes, [], bad, "doc-1")).toThrow(
+      /unknown target_node_id "n-nonexistent"/
+    );
+  });
 });
 
 describe("SemanticIRSchema strictness", () => {

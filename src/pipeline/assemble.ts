@@ -52,6 +52,19 @@ export const SemanticIRSchema = z.object({
   schema_version: z.literal("1.0"),
 });
 
+type DirectionRule = "source-later" | "source-earlier";
+
+const DIRECTION_RULES: Partial<Record<SemanticEdge["relation"], DirectionRule>> = {
+  // Empirically confirmed via repeated live smoke-test runs — see
+  // Docs/semantic_ir_schema_v1.md for the evidence behind each entry.
+  revises: "source-later",   // 2/3 runs backwards when left to the prompt
+  causes: "source-earlier",  // 6/6 causal edges observed backwards
+  enables: "source-earlier", // same evidence set as causes
+  // establishes/extends are NOT included — same causal family, but
+  // their directionality has not been empirically tested. Do not add
+  // them speculatively.
+};
+
 export function assembleSemanticIR(
   nodes: SemanticNode[],
   precedesEdges: SemanticEdge[],
@@ -60,30 +73,35 @@ export function assembleSemanticIR(
 ): SemanticIR {
   const nodeMap = new Map(nodes.map((n) => [n.id, n]));
 
-  // Correct revises-edge directionality.
-  // Empirically confirmed: real smoke-test runs produced 1 correct / 2
-  // backwards results when this rule was left to the prompt alone.
-  // The correct direction is source.span_location.start > target.span_location.start
-  // (source = the later, revising node). If the LLM got it wrong, produce
-  // a new edge with the ids swapped — do not mutate the original object.
+  // Correct edge directionality for relations with known rules.
+  // Each rule defines the expected relative position of source vs target.
+  // If the LLM got it wrong, produce a new edge with the ids swapped —
+  // do not mutate the original object.
   const correctedLlmEdges = llmEdges.map((edge) => {
-    if (edge.relation !== "revises") return edge;
+    const rule = DIRECTION_RULES[edge.relation];
+    if (!rule) return edge;
 
     const srcNode = nodeMap.get(edge.source_node_id);
     if (!srcNode) {
       throw new Error(
-        `Revises edge "${edge.id}" references unknown source_node_id "${edge.source_node_id}"`
+        `${edge.relation} edge "${edge.id}" references unknown source_node_id "${edge.source_node_id}"`
       );
     }
     const tgtNode = nodeMap.get(edge.target_node_id);
     if (!tgtNode) {
       throw new Error(
-        `Revises edge "${edge.id}" references unknown target_node_id "${edge.target_node_id}"`
+        `${edge.relation} edge "${edge.id}" references unknown target_node_id "${edge.target_node_id}"`
       );
     }
 
-    if (srcNode.span_location.start < tgtNode.span_location.start) {
-      // Source is earlier than target — direction is backwards. Swap.
+    let backwards: boolean;
+    if (rule === "source-later") {
+      backwards = srcNode.span_location.start < tgtNode.span_location.start;
+    } else {
+      backwards = srcNode.span_location.start > tgtNode.span_location.start;
+    }
+
+    if (backwards) {
       return {
         ...edge,
         source_node_id: edge.target_node_id,
