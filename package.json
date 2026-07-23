@@ -8,7 +8,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "smoke": "tsx scripts/smoke-test.ts",
-    "smoke:direction": "tsx scripts/smoke-test.ts --direction-only"
+    "smoke:direction": "tsx scripts/smoke-test.ts --direction-only",
+    "smoke:causal": "tsx scripts/smoke-test.ts --causal-direction-only"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

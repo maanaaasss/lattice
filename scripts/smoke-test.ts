@@ -6,6 +6,7 @@
  *   npm run smoke                      # uses embedded default text
  *   npm run smoke -- path/to/file.txt  # uses file contents
  *   npm run smoke:direction            # runs only the directionality check
+ *   npm run smoke:causal               # runs only the causal direction check
  *
  * Requires LLM_API_KEY, LLM_BASE_URL, LLM_MODEL in the environment.
  * To load from .env without dotenv:
@@ -31,6 +32,11 @@ const DIRECTIONALITY_CHECK_TEXT =
   "I used to think honesty always paid off. Once I trusted everyone " +
   "right away, now I take time before opening up to anyone.";
 
+const CAUSAL_DIRECTION_CHECK_TEXT =
+  "The server crashed at midnight. This caused three hours of downtime " +
+  "for all users. The team finished the database migration early. " +
+  "This enabled us to start testing a week ahead of schedule.";
+
 async function main() {
   const required = ["LLM_API_KEY", "LLM_BASE_URL", "LLM_MODEL"] as const;
   const missing = required.filter((k) => !process.env[k]);
@@ -44,10 +50,16 @@ async function main() {
   const model = process.env.LLM_MODEL!;
 
   const directionOnly = process.argv.slice(2).includes("--direction-only");
+  const causalDirectionOnly = process.argv.slice(2).includes("--causal-direction-only");
   const client = new OpenAICompatibleClient({ baseUrl, apiKey, model });
 
   if (directionOnly) {
     await runDirectionalityCheck(client);
+    return;
+  }
+
+  if (causalDirectionOnly) {
+    await runCausalDirectionalityCheck(client);
     return;
   }
 
@@ -178,6 +190,64 @@ async function runDirectionalityCheck(client: OpenAICompatibleClient) {
       }
 
       if (srcNode.span_location.start > tgtNode.span_location.start) {
+        console.log("  DIRECTION CORRECT");
+      } else {
+        console.log("  DIRECTION BACKWARDS");
+      }
+    }
+  }
+}
+
+async function runCausalDirectionalityCheck(client: OpenAICompatibleClient) {
+  console.log("\n========================================");
+  console.log("--- CAUSAL DIRECTIONALITY CHECK ---");
+  console.log("========================================");
+  console.log(`Input text: "${CAUSAL_DIRECTION_CHECK_TEXT}"`);
+
+  const dirSegments = segmentText(CAUSAL_DIRECTION_CHECK_TEXT);
+  const dirNodes = await classifySegments(dirSegments, "causal-check-doc", client);
+  const dirCandidates = detectRevisionCandidates(dirNodes);
+  const dirEdges = await extractRelations(
+    dirNodes,
+    dirCandidates,
+    CAUSAL_DIRECTION_CHECK_TEXT,
+    client
+  );
+
+  const causalEdges = dirEdges.filter(
+    (e) => e.relation === "causes" || e.relation === "enables"
+  );
+
+  if (causalEdges.length === 0) {
+    console.log(
+      "\nWARNING: Zero causes/enables edges found."
+    );
+    console.log(
+      "  The model did not produce any causal edges from this input."
+    );
+    console.log("  All returned edges:");
+    for (const e of dirEdges) {
+      const src = dirNodes.find((n) => n.id === e.source_node_id);
+      const tgt = dirNodes.find((n) => n.id === e.target_node_id);
+      console.log(`    ${e.source_node_id} → ${e.target_node_id} (${e.relation})`);
+      console.log(`      source text: "${src?.text_span}"`);
+      console.log(`      target text: "${tgt?.text_span}"`);
+    }
+  } else {
+    for (const edge of causalEdges) {
+      const srcNode = dirNodes.find((n) => n.id === edge.source_node_id);
+      const tgtNode = dirNodes.find((n) => n.id === edge.target_node_id);
+
+      console.log(`\n${edge.relation} edge: ${edge.source_node_id} → ${edge.target_node_id}`);
+      console.log(`  source (${edge.source_node_id}): "${srcNode?.text_span}"`);
+      console.log(`  target (${edge.target_node_id}): "${tgtNode?.text_span}"`);
+
+      if (!srcNode || !tgtNode) {
+        console.log("  DIRECTION UNKNOWN — could not look up node(s)");
+        continue;
+      }
+
+      if (srcNode.span_location.start < tgtNode.span_location.start) {
         console.log("  DIRECTION CORRECT");
       } else {
         console.log("  DIRECTION BACKWARDS");
