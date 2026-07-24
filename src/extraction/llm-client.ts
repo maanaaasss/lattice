@@ -12,10 +12,11 @@ export class OpenAICompatibleClient implements LLMClient {
     this.baseUrl = config.baseUrl.replace(/\/+$/, "");
     this.apiKey = config.apiKey;
     this.model = config.model;
-    // Default to 8192 — a reasonable starting point for most providers,
-    // not a verified per-provider limit. Override via config.maxTokens
-    // if a provider's actual limit is known.
-    this.maxTokens = config.maxTokens ?? 8192;
+    // Default to 2048 — confirmed safe for Groq's free tier (6000 TPM);
+    // 8192 caused immediate 413 (TPM budget exceeded) even on tiny requests.
+    // Still not sufficient for large documents (needs chunking) and not
+    // verified against every provider. Override via config.maxTokens.
+    this.maxTokens = config.maxTokens ?? 2048;
   }
 
   async complete(systemPrompt: string, userPrompt: string): Promise<string> {

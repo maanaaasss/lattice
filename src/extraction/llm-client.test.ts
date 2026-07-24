@@ -144,7 +144,7 @@ describe("OpenAICompatibleClient", () => {
     expect((err as Error).message.length).toBeLessThan(2000);
   });
 
-  it("sends max_tokens: 8192 by default when no maxTokens is provided", async () => {
+  it("sends max_tokens: 2048 by default when no maxTokens is provided", async () => {
     const fetchSpy = vi.fn().mockResolvedValue(
       jsonResponse({ choices: [{ message: { content: "ok" } }] })
     );
@@ -154,7 +154,7 @@ describe("OpenAICompatibleClient", () => {
     await client.complete("sys", "usr");
 
     const body = JSON.parse(fetchSpy.mock.calls[0][1].body);
-    expect(body.max_tokens).toBe(8192);
+    expect(body.max_tokens).toBe(2048);
   });
 
   it("sends a custom maxTokens value when provided in config", async () => {
