@@ -17,7 +17,7 @@ import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { segmentText } from "../src/segmentation/segment.js";
 import { OpenAICompatibleClient } from "../src/extraction/llm-client.js";
-import { classifySegments } from "../src/extraction/classify.js";
+import { classifySegments, classifySegmentsBatched } from "../src/extraction/classify.js";
 import {
   derivePrecedesEdges,
   detectRevisionCandidates,
@@ -77,7 +77,7 @@ async function main() {
 
   // ── Classification ──
   console.log("\n--- Classifying nodes ---");
-  const nodes = await classifySegments(segments, "smoke-test-doc", client);
+  const nodes = await classifySegmentsBatched(segments, "smoke-test-doc", client);
 
   console.log(`\nTotal nodes: ${nodes.length}`);
 
