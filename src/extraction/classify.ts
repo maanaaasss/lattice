@@ -52,10 +52,11 @@ const CLASSIFYABLE_TYPES: NodeType[] = ["Claim", "Observation", "Decision", "Mem
 export async function classifySegments(
   segments: RawSegment[],
   documentId: string,
-  client: LLMClient
+  client: LLMClient,
+  startIndex: number = 0
 ): Promise<SemanticNode[]> {
   const segmentsWithIds = segments.map((seg, i) => ({
-    id: `seg-${i}`,
+    id: `seg-${startIndex + i}`,
     text: seg.text,
   }));
 
@@ -85,7 +86,7 @@ export async function classifySegments(
   }
 
   return segments.map((seg, i): SemanticNode => {
-    const segId = `seg-${i}`;
+    const segId = `seg-${startIndex + i}`;
     const classification = classificationMap.get(segId)!;
 
     return {
@@ -101,4 +102,24 @@ export async function classifySegments(
       synthetic: false,
     };
   });
+}
+
+export async function classifySegmentsBatched(
+  segments: RawSegment[],
+  documentId: string,
+  client: LLMClient,
+  batchSize: number = 20
+): Promise<SemanticNode[]> {
+  if (segments.length <= batchSize) {
+    return classifySegments(segments, documentId, client);
+  }
+
+  const results: SemanticNode[] = [];
+  for (let i = 0; i < segments.length; i += batchSize) {
+    const batch = segments.slice(i, i + batchSize);
+    const batchNodes = await classifySegments(batch, documentId, client, i);
+    results.push(...batchNodes);
+  }
+
+  return results;
 }

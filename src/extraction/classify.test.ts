@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import type { LLMClient } from "./llm-client.js";
 import type { RawSegment } from "../segmentation/segment.js";
-import { classifySegments, EXTRACTION_SYSTEM_PROMPT, ClassificationSchema } from "./classify.js";
+import { classifySegments, classifySegmentsBatched, EXTRACTION_SYSTEM_PROMPT, ClassificationSchema } from "./classify.js";
 
 function mockClient(response: string): LLMClient {
   return {
@@ -236,6 +236,129 @@ describe("classifySegments", () => {
     expect(parsed).toHaveLength(3);
     expect(parsed[0].id).toBe("seg-0");
     expect(parsed[0].text).toBe("I feel overwhelmed by the workload.");
+  });
+
+  it("uses startIndex to generate globally correct segment ids", async () => {
+    const dynamicClient: LLMClient = {
+      async complete(_systemPrompt: string, userPrompt: string) {
+        const segments = JSON.parse(userPrompt);
+        return JSON.stringify({
+          classifications: segments.map((s: { id: string }) => ({
+            segment_id: s.id,
+            type: "Emotion",
+            attribution: { type: "self", ref: null },
+            epistemic_confidence: null,
+          })),
+        });
+      },
+    };
+    const nodes = await classifySegments(sampleSegments, "doc-1", dynamicClient, 5);
+
+    expect(nodes).toHaveLength(3);
+    expect(nodes[0].id).toBe("seg-5");
+    expect(nodes[1].id).toBe("seg-6");
+    expect(nodes[2].id).toBe("seg-7");
+  });
+});
+
+describe("classifySegmentsBatched", () => {
+  function makeSegments(count: number): RawSegment[] {
+    return Array.from({ length: count }, (_, i) => ({
+      text: `Segment ${i} text.`,
+      start: i * 20,
+      end: (i + 1) * 20 - 1,
+      paragraph_index: 0,
+    }));
+  }
+
+  function makeDynamicClient(): LLMClient & { calls: string[][] } {
+    const client: LLMClient & { calls: string[][] } = {
+      calls: [],
+      async complete(_systemPrompt: string, userPrompt: string) {
+        const segments = JSON.parse(userPrompt);
+        client.calls.push(segments.map((s: { id: string }) => s.id));
+
+        return JSON.stringify({
+          classifications: segments.map((s: { id: string; text: string }) => ({
+            segment_id: s.id,
+            type: "Claim",
+            attribution: { type: "self", ref: null },
+            epistemic_confidence: null,
+          })),
+        });
+      },
+    };
+    return client;
+  }
+
+  it("makes exactly one call when segments.length <= batchSize", async () => {
+    const segments = makeSegments(3);
+    const client = makeDynamicClient();
+
+    const nodes = await classifySegmentsBatched(segments, "doc-1", client, 5);
+
+    expect(client.calls).toHaveLength(1);
+    expect(client.calls[0]).toEqual(["seg-0", "seg-1", "seg-2"]);
+    expect(nodes).toHaveLength(3);
+    expect(nodes[0].id).toBe("seg-0");
+    expect(nodes[1].id).toBe("seg-1");
+    expect(nodes[2].id).toBe("seg-2");
+  });
+
+  it("produces the same result as classifySegments for non-batched input", async () => {
+    const segments = makeSegments(3);
+    const client1 = makeDynamicClient();
+    const client2 = makeDynamicClient();
+
+    const batched = await classifySegmentsBatched(segments, "doc-1", client1, 5);
+    const direct = await classifySegments(segments, "doc-1", client2);
+
+    expect(batched).toEqual(direct);
+  });
+
+  it("splits into correct batches with globally unique ids", async () => {
+    const segments = makeSegments(5);
+    const client = makeDynamicClient();
+
+    const nodes = await classifySegmentsBatched(segments, "doc-1", client, 2);
+
+    expect(client.calls).toHaveLength(3);
+    expect(client.calls[0]).toEqual(["seg-0", "seg-1"]);
+    expect(client.calls[1]).toEqual(["seg-2", "seg-3"]);
+    expect(client.calls[2]).toEqual(["seg-4"]);
+
+    expect(nodes).toHaveLength(5);
+    expect(nodes.map((n) => n.id)).toEqual(["seg-0", "seg-1", "seg-2", "seg-3", "seg-4"]);
+  });
+
+  it("runs batches sequentially, not concurrently", async () => {
+    const segments = makeSegments(5);
+    let inFlight = 0;
+    let maxConcurrent = 0;
+
+    const client: LLMClient = {
+      async complete(_systemPrompt: string, userPrompt: string) {
+        inFlight++;
+        if (inFlight > maxConcurrent) maxConcurrent = inFlight;
+
+        const segs = JSON.parse(userPrompt);
+        await new Promise((r) => setTimeout(r, 10));
+        inFlight--;
+
+        return JSON.stringify({
+          classifications: segs.map((s: { id: string }) => ({
+            segment_id: s.id,
+            type: "Claim",
+            attribution: { type: "self", ref: null },
+            epistemic_confidence: null,
+          })),
+        });
+      },
+    };
+
+    await classifySegmentsBatched(segments, "doc-1", client, 2);
+
+    expect(maxConcurrent).toBe(1);
   });
 });
 
