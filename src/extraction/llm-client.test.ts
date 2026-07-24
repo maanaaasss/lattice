@@ -143,4 +143,35 @@ describe("OpenAICompatibleClient", () => {
     expect((err as Error).message).toContain("choices");
     expect((err as Error).message.length).toBeLessThan(2000);
   });
+
+  it("sends max_tokens: 8192 by default when no maxTokens is provided", async () => {
+    const fetchSpy = vi.fn().mockResolvedValue(
+      jsonResponse({ choices: [{ message: { content: "ok" } }] })
+    );
+    vi.stubGlobal("fetch", fetchSpy);
+
+    const client = makeClient();
+    await client.complete("sys", "usr");
+
+    const body = JSON.parse(fetchSpy.mock.calls[0][1].body);
+    expect(body.max_tokens).toBe(8192);
+  });
+
+  it("sends a custom maxTokens value when provided in config", async () => {
+    const fetchSpy = vi.fn().mockResolvedValue(
+      jsonResponse({ choices: [{ message: { content: "ok" } }] })
+    );
+    vi.stubGlobal("fetch", fetchSpy);
+
+    const client = new OpenAICompatibleClient({
+      baseUrl: "https://api.example.com/v1",
+      apiKey: "test-key",
+      model: "test-model",
+      maxTokens: 4096,
+    });
+    await client.complete("sys", "usr");
+
+    const body = JSON.parse(fetchSpy.mock.calls[0][1].body);
+    expect(body.max_tokens).toBe(4096);
+  });
 });
