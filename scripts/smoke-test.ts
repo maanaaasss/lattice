@@ -17,6 +17,7 @@ import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { segmentText } from "../src/segmentation/segment.js";
 import { OpenAICompatibleClient } from "../src/extraction/llm-client.js";
+import { RateLimitedClient } from "../src/extraction/rate-limited-client.js";
 import { classifySegments, classifySegmentsBatched } from "../src/extraction/classify.js";
 import {
   derivePrecedesEdges,
@@ -52,6 +53,10 @@ async function main() {
   const directionOnly = process.argv.slice(2).includes("--direction-only");
   const causalDirectionOnly = process.argv.slice(2).includes("--causal-direction-only");
   const client = new OpenAICompatibleClient({ baseUrl, apiKey, model });
+  const rateLimitedClient = new RateLimitedClient(client, {
+    tpmLimit: 6000,
+    maxTokensPerCall: 2048,
+  });
 
   if (directionOnly) {
     await runDirectionalityCheck(client);
@@ -77,7 +82,7 @@ async function main() {
 
   // ── Classification ──
   console.log("\n--- Classifying nodes ---");
-  const nodes = await classifySegmentsBatched(segments, "smoke-test-doc", client);
+  const nodes = await classifySegmentsBatched(segments, "smoke-test-doc", rateLimitedClient);
 
   console.log(`\nTotal nodes: ${nodes.length}`);
 
