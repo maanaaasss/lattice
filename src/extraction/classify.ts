@@ -29,9 +29,9 @@ const ClassificationItemSchema = z.object({
   subtype: z.string().nullable().optional(),
   attribution: z.object({
     type: z.enum(["self", "citation", "external"]),
-    ref: z.string().nullable(),
+    ref: z.string().nullable().optional().transform((v) => v ?? null),
   }),
-  epistemic_confidence: z.number().min(0).max(1).nullable(),
+  epistemic_confidence: z.number().min(0).max(1).nullable().optional().transform((v) => v ?? null),
 });
 
 export const ClassificationSchema = z.object({

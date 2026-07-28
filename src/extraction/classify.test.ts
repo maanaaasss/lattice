@@ -107,7 +107,7 @@ describe("classifySegments", () => {
     await expect(classifySegments(sampleSegments, "doc-1", client)).rejects.toThrow();
   });
 
-  it("throws on missing required field", async () => {
+  it("tolerates omitted epistemic_confidence and normalizes to null", async () => {
     const missing = JSON.stringify({
       classifications: [
         {
@@ -132,6 +132,99 @@ describe("classifySegments", () => {
     });
 
     const client = mockClient(missing);
+    const nodes = await classifySegments(sampleSegments, "doc-1", client);
+
+    expect(nodes).toHaveLength(3);
+    expect(nodes[0].epistemic_confidence).toBeNull();
+    expect(nodes[1].epistemic_confidence).toBeNull();
+    expect(nodes[2].epistemic_confidence).toBeNull();
+  });
+
+  it("throws on malformed epistemic_confidence (wrong type)", async () => {
+    const malformed = JSON.stringify({
+      classifications: [
+        {
+          segment_id: "seg-0",
+          type: "Emotion",
+          attribution: { type: "self", ref: null },
+          epistemic_confidence: null,
+        },
+        {
+          segment_id: "seg-1",
+          type: "Claim",
+          attribution: { type: "self", ref: null },
+          epistemic_confidence: "high",
+        },
+        {
+          segment_id: "seg-2",
+          type: "Decision",
+          attribution: { type: "self", ref: null },
+          epistemic_confidence: null,
+        },
+      ],
+    });
+
+    const client = mockClient(malformed);
+    await expect(classifySegments(sampleSegments, "doc-1", client)).rejects.toThrow();
+  });
+
+  it("tolerates omitted attribution.ref and normalizes to null", async () => {
+    const omittedRef = JSON.stringify({
+      classifications: [
+        {
+          segment_id: "seg-0",
+          type: "Emotion",
+          attribution: { type: "self" },
+          epistemic_confidence: null,
+        },
+        {
+          segment_id: "seg-1",
+          type: "Claim",
+          attribution: { type: "citation", ref: "Legal Aid Act" },
+          epistemic_confidence: 0.9,
+        },
+        {
+          segment_id: "seg-2",
+          type: "Decision",
+          attribution: { type: "self" },
+          epistemic_confidence: null,
+        },
+      ],
+    });
+
+    const client = mockClient(omittedRef);
+    const nodes = await classifySegments(sampleSegments, "doc-1", client);
+
+    expect(nodes).toHaveLength(3);
+    expect(nodes[0].attribution).toEqual({ type: "self", ref: null });
+    expect(nodes[2].attribution).toEqual({ type: "self", ref: null });
+  });
+
+  it("throws on malformed attribution.ref (wrong type)", async () => {
+    const malformedRef = JSON.stringify({
+      classifications: [
+        {
+          segment_id: "seg-0",
+          type: "Emotion",
+          attribution: { type: "self", ref: null },
+          epistemic_confidence: null,
+        },
+        {
+          segment_id: "seg-1",
+          type: "Claim",
+          attribution: { type: "self", ref: 42 },
+          epistemic_confidence: null,
+        },
+        {
+          segment_id: "seg-2",
+          type: "Decision",
+          attribution: { type: "self", ref: null },
+          epistemic_confidence: null,
+        },
+      ],
+    });
+
+    const client = mockClient(malformedRef);
     await expect(classifySegments(sampleSegments, "doc-1", client)).rejects.toThrow();
   });
 
