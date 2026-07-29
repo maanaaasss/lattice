@@ -175,3 +175,119 @@ describe("OpenAICompatibleClient", () => {
     expect(body.max_tokens).toBe(4096);
   });
 });
+
+describe("OpenAICompatibleClient retry-on-429", () => {
+  function rateLimitResponse(body: string, retryAfter?: string) {
+    const headers: Record<string, string> = { "Content-Type": "text/plain" };
+    if (retryAfter !== undefined) {
+      headers["Retry-After"] = retryAfter;
+    }
+    return new Response(body, { status: 429, headers });
+  }
+
+  function successResponse(content: string) {
+    return jsonResponse({
+      choices: [{ message: { content } }],
+    });
+  }
+
+  it("retries on 429 with Retry-After header and resolves on success", async () => {
+    vi.useFakeTimers();
+    const fetchSpy = vi.fn()
+      .mockResolvedValueOnce(rateLimitResponse("rate limited", "2"))
+      .mockResolvedValueOnce(successResponse("ok after retry"));
+    vi.stubGlobal("fetch", fetchSpy);
+
+    const client = new OpenAICompatibleClient({
+      baseUrl: "https://api.example.com/v1",
+      apiKey: "test-key",
+      model: "test-model",
+    });
+
+    const promise = client.complete("sys", "usr");
+
+    // Advance past Retry-After: 2s + 500ms safety margin = 2500ms
+    await vi.advanceTimersByTimeAsync(2500);
+
+    const result = await promise;
+    expect(result).toBe("ok after retry");
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+    vi.useRealTimers();
+  });
+
+  it("parses wait time from response body when no Retry-After header", async () => {
+    vi.useFakeTimers();
+    const fetchSpy = vi.fn()
+      .mockResolvedValueOnce(rateLimitResponse("Please try again in 3.5s"))
+      .mockResolvedValueOnce(successResponse("ok after body retry"));
+    vi.stubGlobal("fetch", fetchSpy);
+
+    const client = new OpenAICompatibleClient({
+      baseUrl: "https://api.example.com/v1",
+      apiKey: "test-key",
+      model: "test-model",
+    });
+
+    const promise = client.complete("sys", "usr");
+
+    // 3.5s + 500ms safety = 4000ms
+    await vi.advanceTimersByTimeAsync(4000);
+
+    const result = await promise;
+    expect(result).toBe("ok after body retry");
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+    vi.useRealTimers();
+  });
+
+  it("throws after exhausting maxRetries on persistent 429", async () => {
+    vi.useFakeTimers();
+    const fetchSpy = vi.fn()
+      .mockImplementation(() => Promise.resolve(rateLimitResponse("rate limited", "1")));
+    vi.stubGlobal("fetch", fetchSpy);
+
+    const client = new OpenAICompatibleClient({
+      baseUrl: "https://api.example.com/v1",
+      apiKey: "test-key",
+      model: "test-model",
+      maxRetries: 2,
+    });
+
+    const promise = client.complete("sys", "usr").catch((e: unknown) => e);
+
+    // Flush all pending microtasks and timers
+    await vi.runAllTimersAsync();
+
+    const err = await promise;
+    expect(err).toBeInstanceOf(Error);
+    expect((err as Error).message).toBe(
+      "LLM request failed with status 429: rate limited"
+    );
+    // 1 initial + 2 retries = 3 fetch calls
+    expect(fetchSpy).toHaveBeenCalledTimes(3);
+    vi.useRealTimers();
+  });
+
+  it("retried request has the same body as the original attempt", async () => {
+    vi.useFakeTimers();
+    const fetchSpy = vi.fn()
+      .mockResolvedValueOnce(rateLimitResponse("rate limited", "1"))
+      .mockResolvedValueOnce(successResponse("ok"));
+    vi.stubGlobal("fetch", fetchSpy);
+
+    const client = new OpenAICompatibleClient({
+      baseUrl: "https://api.example.com/v1",
+      apiKey: "test-key",
+      model: "test-model",
+    });
+
+    const promise = client.complete("sys prompt", "usr prompt");
+
+    await vi.advanceTimersByTimeAsync(1500);
+
+    await promise;
+
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+    expect(fetchSpy.mock.calls[0][1].body).toBe(fetchSpy.mock.calls[1][1].body);
+    vi.useRealTimers();
+  });
+});

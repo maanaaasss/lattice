@@ -7,8 +7,9 @@ export class OpenAICompatibleClient implements LLMClient {
   private apiKey: string;
   private model: string;
   private maxTokens: number;
+  private maxRetries: number;
 
-  constructor(config: { baseUrl: string; apiKey: string; model: string; maxTokens?: number }) {
+  constructor(config: { baseUrl: string; apiKey: string; model: string; maxTokens?: number; maxRetries?: number }) {
     this.baseUrl = config.baseUrl.replace(/\/+$/, "");
     this.apiKey = config.apiKey;
     this.model = config.model;
@@ -17,49 +18,87 @@ export class OpenAICompatibleClient implements LLMClient {
     // Still not sufficient for large documents (needs chunking) and not
     // verified against every provider. Override via config.maxTokens.
     this.maxTokens = config.maxTokens ?? 2048;
+    this.maxRetries = config.maxRetries ?? 3;
   }
 
   async complete(systemPrompt: string, userPrompt: string): Promise<string> {
-    const response = await fetch(`${this.baseUrl}/chat/completions`, {
+    const requestBody = JSON.stringify({
+      model: this.model,
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      response_format: { type: "json_object" },
+      max_tokens: this.maxTokens,
+    });
+
+    const requestInit: RequestInit = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${this.apiKey}`,
       },
-      body: JSON.stringify({
-        model: this.model,
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
-        ],
-        response_format: { type: "json_object" },
-        max_tokens: this.maxTokens,
-      }),
-    });
+      body: requestBody,
+    };
 
-    if (!response.ok) {
-      const body = await response.text();
-      throw new Error(
-        `LLM request failed with status ${response.status}: ${body}`
-      );
+    let retriesLeft = this.maxRetries;
+
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const response = await fetch(`${this.baseUrl}/chat/completions`, requestInit);
+
+      if (!response.ok) {
+        const bodyText = await response.text();
+
+        if (response.status === 429 && retriesLeft > 0) {
+          retriesLeft--;
+          const waitMs = this.parseRetryAfter(response.headers, bodyText);
+          await new Promise((resolve) => setTimeout(resolve, waitMs));
+          continue;
+        }
+
+        throw new Error(
+          `LLM request failed with status ${response.status}: ${bodyText}`
+        );
+      }
+
+      const data = await response.json();
+      const preview = JSON.stringify(data).slice(0, 500);
+
+      if (!Array.isArray(data.choices) || data.choices.length === 0) {
+        throw new Error(
+          `LLM response missing or empty "choices" array. Response body: ${preview}`
+        );
+      }
+
+      const choice = data.choices[0];
+      if (!choice.message || typeof choice.message.content !== "string") {
+        throw new Error(
+          `LLM response choices[0].message.content is missing or not a string. Response body: ${preview}`
+        );
+      }
+
+      return choice.message.content;
+    }
+  }
+
+  private parseRetryAfter(headers: Headers, bodyText: string): number {
+    const retryAfterHeader = headers.get("Retry-After");
+    if (retryAfterHeader) {
+      const seconds = parseFloat(retryAfterHeader);
+      if (!isNaN(seconds) && seconds > 0) {
+        return seconds * 1000 + 500;
+      }
     }
 
-    const data = await response.json();
-    const preview = JSON.stringify(data).slice(0, 500);
-
-    if (!Array.isArray(data.choices) || data.choices.length === 0) {
-      throw new Error(
-        `LLM response missing or empty "choices" array. Response body: ${preview}`
-      );
+    const bodyMatch = bodyText.match(/try again in ([\d.]+)s/i);
+    if (bodyMatch) {
+      const seconds = parseFloat(bodyMatch[1]);
+      if (!isNaN(seconds) && seconds > 0) {
+        return seconds * 1000 + 500;
+      }
     }
 
-    const choice = data.choices[0];
-    if (!choice.message || typeof choice.message.content !== "string") {
-      throw new Error(
-        `LLM response choices[0].message.content is missing or not a string. Response body: ${preview}`
-      );
-    }
-
-    return choice.message.content;
+    return 5500;
   }
 }
