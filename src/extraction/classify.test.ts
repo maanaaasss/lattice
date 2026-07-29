@@ -141,6 +141,7 @@ describe("classifySegments", () => {
     expect(msg).toContain("Classification schema validation failed");
     expect(msg).toContain("Actual classifications array length: 3");
     expect(msg).toContain(rawFrag);
+    expect(msg).toContain("invalid_value");
   });
 
   it("tolerates omitted epistemic_confidence and normalizes to null", async () => {

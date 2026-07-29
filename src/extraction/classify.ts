@@ -75,7 +75,7 @@ export async function classifySegments(
       const arrayLen = Array.isArray(parsed?.classifications) ? parsed.classifications.length : "N/A";
       throw new Error(
         `Classification schema validation failed.\n` +
-        `Zod issues:\n${err.format()}\n` +
+        `Zod issues:\n${err.message}\n` +
         `Actual classifications array length: ${arrayLen}\n` +
         `Raw LLM response:\n${rawTruncated}`
       );
