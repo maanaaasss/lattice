@@ -11,7 +11,7 @@ Available relation types and their meaning:
 - undercuts: two things are co-present in tension without logically negating each other (an aspiration alongside its own failure, a surface state alongside what's underneath it)
 - elaborates: adds detail or scope to another node without changing its truth value
 - generalizes: a specific instance is abstracted into a broader claim
-- causes / enables: direct causal relation between events, decisions, or claims about the world
+- causes / enables: a DIRECT causal relation — the source is the actual reason the target happened, not simply something that happened earlier in the same passage. Before proposing this relation, apply this test: replace the connection between the two spans with "and then" — if the passage still reads naturally and stays true, this is mere sequence, not causation, and you should propose NO relation between them (sequence alone is handled elsewhere in the pipeline, not by you). Only propose causes/enables if replacing the connection with "and because of this" also reads naturally and stays true. Two examples of what NOT to propose as causes, because they are only sequence: "I got a new manager. Her name was Alex." (getting a manager doesn't cause her name); "I moved to a new city. It has nice parks." (moving doesn't cause the parks to exist). Two examples of genuine causation: "I missed the deadline. My manager was upset."; "I broke my leg. I couldn't attend the wedding."
 - establishes: an event or ruling gives rise to a principle — not a psychological cause, a doctrine or fact being created
 - extends: a later claim broadens the scope of an earlier one without replacing it
 - depends_on: one node's validity or occurrence is conditional on another
@@ -25,7 +25,7 @@ For each relation you identify:
 - extraction_confidence: 0 to 1 — how clearly the text itself states this relation, independent of whether you believe it's true.
 - interpretation_group: OPTIONAL. If a single span genuinely supports two different, mutually competing readings, you may propose both as separate edges sharing the same interpretation_group string. Only use this for genuine ambiguity, not as a hedge on every relation.
 
-Do not propose a relation on thematic similarity alone. Most sequential pairs have no meaningful relation beyond mere sequence — that's handled elsewhere. Only propose a relation when the text gives an actual signal beyond adjacency.
+Do not propose ANY relation — not just causes — on thematic similarity or mere adjacency alone. Most sequential pairs in a narrative have no meaningful relation beyond sequence, which is handled elsewhere in the pipeline; propose nothing for these pairs rather than forcing a weak causes or supports label onto them. When genuinely uncertain whether a real relation exists, propose no edge — a missing edge is a smaller error than a false one.
 
 Return ONLY valid JSON, no commentary, in exactly this shape:
 {"edges":[{"source_node_id":"seg-0","target_node_id":"seg-2","relation":"causes","evidence_span":"exact quoted text here","extraction_confidence":0.8,"interpretation_group":null}]}
