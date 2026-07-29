@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z, ZodError } from "zod";
 import type { RawSegment } from "../segmentation/segment.js";
 import type { SemanticNode, NodeType, Attribution } from "../schema.js";
 import type { LLMClient } from "./llm-client.js";
@@ -65,7 +65,23 @@ export async function classifySegments(
   const rawResponse = await client.complete(EXTRACTION_SYSTEM_PROMPT, userPrompt);
   const stripped = stripCodeFences(rawResponse);
   const parsed = JSON.parse(stripped);
-  const validated = ClassificationSchema.parse(parsed);
+
+  let validated;
+  try {
+    validated = ClassificationSchema.parse(parsed);
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const rawTruncated = stripped.length > 3000 ? stripped.slice(0, 3000) + "…[truncated]" : stripped;
+      const arrayLen = Array.isArray(parsed?.classifications) ? parsed.classifications.length : "N/A";
+      throw new Error(
+        `Classification schema validation failed.\n` +
+        `Zod issues:\n${err.format()}\n` +
+        `Actual classifications array length: ${arrayLen}\n` +
+        `Raw LLM response:\n${rawTruncated}`
+      );
+    }
+    throw err;
+  }
 
   if (validated.classifications.length !== segments.length) {
     throw new Error(

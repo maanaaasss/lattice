@@ -107,6 +107,42 @@ describe("classifySegments", () => {
     await expect(classifySegments(sampleSegments, "doc-1", client)).rejects.toThrow();
   });
 
+  it("includes raw response text and classifications array length in Zod validation error", async () => {
+    const rawFrag = "some unexpected model output with unique marker XYZZY";
+    const invalid = JSON.stringify({
+      classifications: [
+        {
+          segment_id: "seg-0",
+          type: "Confluence",
+          attribution: { type: "self", ref: null },
+          epistemic_confidence: null,
+        },
+        {
+          segment_id: "seg-1",
+          type: "Claim",
+          attribution: { type: "self", ref: null },
+          epistemic_confidence: null,
+        },
+        {
+          segment_id: "seg-2",
+          type: "Decision",
+          attribution: { type: "self", ref: null },
+          epistemic_confidence: null,
+        },
+      ],
+      _note: rawFrag,
+    });
+
+    const client = mockClient(invalid);
+    const err = await classifySegments(sampleSegments, "doc-1", client).catch((e) => e);
+
+    expect(err).toBeInstanceOf(Error);
+    const msg = (err as Error).message;
+    expect(msg).toContain("Classification schema validation failed");
+    expect(msg).toContain("Actual classifications array length: 3");
+    expect(msg).toContain(rawFrag);
+  });
+
   it("tolerates omitted epistemic_confidence and normalizes to null", async () => {
     const missing = JSON.stringify({
       classifications: [
