@@ -1,7 +1,8 @@
 import { App, Notice, Plugin, PluginSettingTab, Setting } from "obsidian";
 import { segmentText } from "../src/segmentation/segment.js";
 import { OpenAICompatibleClient } from "../src/extraction/llm-client.js";
-import { classifySegments } from "../src/extraction/classify.js";
+import { classifySegmentsBatched } from "../src/extraction/classify.js";
+import { RateLimitedClient } from "../src/extraction/rate-limited-client.js";
 import {
   derivePrecedesEdges,
   detectRevisionCandidates,
@@ -69,12 +70,16 @@ export default class SemanticIRPlugin extends Plugin {
         apiKey: this.settings.llmApiKey,
         model: this.settings.llmModel,
       });
+      const rateLimitedClient = new RateLimitedClient(client, {
+        tpmLimit: 6000,
+        maxTokensPerCall: 2048,
+      });
 
       // 1. Segment
       const segments = segmentText(inputText);
 
       // 2. Classify
-      const nodes = await classifySegments(segments, documentId, client);
+      const nodes = await classifySegmentsBatched(segments, documentId, rateLimitedClient);
 
       // 3. Rule-based relations
       const precedesEdges = derivePrecedesEdges(nodes);
