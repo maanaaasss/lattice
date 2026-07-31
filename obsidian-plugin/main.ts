@@ -79,7 +79,7 @@ export default class SemanticIRPlugin extends Plugin {
       const segments = segmentText(inputText);
 
       // 2. Classify
-      const nodes = await classifySegmentsBatched(segments, documentId, rateLimitedClient);
+      const nodes = await classifySegmentsBatched(segments, documentId, rateLimitedClient, 10);
 
       // 3. Rule-based relations
       const precedesEdges = derivePrecedesEdges(nodes);
