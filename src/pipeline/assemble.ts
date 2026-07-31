@@ -3,10 +3,7 @@ import type { SemanticNode, SemanticEdge, SemanticIR, NodeType } from "../schema
 
 // Zod schemas mirroring the TypeScript interfaces in schema.ts exactly.
 
-const NodeTypeSchema = z.enum([
-  "Claim", "Observation", "Decision", "Memory",
-  "Value", "Emotion", "Event", "Confluence",
-]) as z.ZodType<NodeType>;
+const NodeTypeSchema = z.string() as z.ZodType<NodeType>;
 
 const AttributionSchema = z.object({
   type: z.enum(["self", "citation", "external"]),

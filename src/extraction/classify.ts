@@ -25,7 +25,7 @@ Every segment_id given to you must appear exactly once in the output. Do not inv
 
 const ClassificationItemSchema = z.object({
   segment_id: z.string(),
-  type: z.enum(["Claim", "Observation", "Decision", "Memory", "Value", "Emotion", "Event"]),
+  type: z.string(),
   subtype: z.string().nullable().optional(),
   attribution: z.object({
     type: z.enum(["self", "citation", "external"]),
@@ -104,7 +104,7 @@ export async function classifySegments(
 
     nodes.push({
       id: segId,
-      type: classification.type,
+      type: classification.type as NodeType,
       subtype: classification.subtype ?? undefined,
       text_span: seg.text,
       source_document_id: documentId,
