@@ -30,7 +30,7 @@ const ClassificationItemSchema = z.object({
   attribution: z.object({
     type: z.string(),
     ref: z.string().nullable().optional().transform((v) => v ?? null),
-  }),
+  }).nullable().optional().transform((v) => v ?? { type: "self", ref: null }),
   epistemic_confidence: z.number().min(0).max(1).nullable().optional().transform((v) => v ?? null),
 });
 

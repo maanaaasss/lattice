@@ -8,7 +8,7 @@ const NodeTypeSchema = z.string() as z.ZodType<NodeType>;
 const AttributionSchema = z.object({
   type: z.string() as z.ZodType<"self" | "citation" | "external">,
   ref: z.string().nullable(),
-});
+}).nullable().optional().transform((v) => v ?? { type: "self" as const, ref: null });
 
 const SemanticNodeSchema = z.object({
   id: z.string(),
