@@ -120,10 +120,11 @@ export default class SemanticIRPlugin extends Plugin {
         `Semantic IR compiled: ${ir.nodes.length} nodes, ${ir.edges.length} edges`
       );
     } catch (err) {
+      console.error("[SemanticIR] Pipeline error:", err);
       const msg =
         err instanceof Error ? err.message : String(err);
       const truncated =
-        msg.length > 300 ? msg.slice(0, 300) + "..." : msg;
+        msg.length > 500 ? msg.slice(0, 500) + "..." : msg;
       new Notice(`Pipeline error: ${truncated}`);
     }
   }

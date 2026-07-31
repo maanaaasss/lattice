@@ -60,6 +60,7 @@ export async function classifySegments(
     text: seg.text,
   }));
 
+  const expectedIds = segmentsWithIds.map((s) => s.id);
   const userPrompt = JSON.stringify(segmentsWithIds);
 
   const rawResponse = await client.complete(EXTRACTION_SYSTEM_PROMPT, userPrompt);
@@ -72,40 +73,36 @@ export async function classifySegments(
   } catch (err) {
     if (err instanceof ZodError) {
       const rawTruncated = stripped.length > 3000 ? stripped.slice(0, 3000) + "…[truncated]" : stripped;
-      const arrayLen = Array.isArray(parsed?.classifications) ? parsed.classifications.length : "N/A";
+      const classifications = Array.isArray(parsed?.classifications) ? parsed.classifications : [];
+      const returnedIds = classifications.map((c: { segment_id?: string }) => c.segment_id ?? "(missing)");
+      const extraIds = returnedIds.filter((id: string) => !expectedIds.includes(id));
+      const missingIds = expectedIds.filter((id: string) => !returnedIds.includes(id));
       throw new Error(
         `Classification schema validation failed.\n` +
+        `Batch: seg-${startIndex} to seg-${startIndex + segments.length - 1} (${segments.length} segments expected)\n` +
         `Zod issues:\n${err.message}\n` +
-        `Actual classifications array length: ${arrayLen}\n` +
+        `Actual classifications array length: ${classifications.length}\n` +
+        `Returned segment IDs: ${JSON.stringify(returnedIds)}\n` +
+        `Extra IDs (model invented): ${extraIds.length > 0 ? JSON.stringify(extraIds) : "none"}\n` +
+        `Missing IDs: ${missingIds.length > 0 ? JSON.stringify(missingIds) : "none"}\n` +
         `Raw LLM response:\n${rawTruncated}`
       );
     }
     throw err;
   }
 
-  if (validated.classifications.length !== segments.length) {
-    throw new Error(
-      `Classification count mismatch: expected ${segments.length} classifications, got ${validated.classifications.length}`
-    );
-  }
-
   const classificationMap = new Map(
     validated.classifications.map((c) => [c.segment_id, c])
   );
 
-  for (const segWithId of segmentsWithIds) {
-    if (!classificationMap.has(segWithId.id)) {
-      throw new Error(
-        `Missing classification for segment "${segWithId.id}"`
-      );
-    }
-  }
-
-  return segments.map((seg, i): SemanticNode => {
+  const nodes: SemanticNode[] = [];
+  for (let i = 0; i < segments.length; i++) {
+    const seg = segments[i];
     const segId = `seg-${startIndex + i}`;
-    const classification = classificationMap.get(segId)!;
+    const classification = classificationMap.get(segId);
+    if (!classification) continue;
 
-    return {
+    nodes.push({
       id: segId,
       type: classification.type,
       subtype: classification.subtype ?? undefined,
@@ -116,8 +113,10 @@ export async function classifySegments(
       temporal_position: null,
       epistemic_confidence: classification.epistemic_confidence,
       synthetic: false,
-    };
-  });
+    });
+  }
+
+  return nodes;
 }
 
 export async function classifySegmentsBatched(
