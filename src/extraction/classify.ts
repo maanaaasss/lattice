@@ -45,10 +45,28 @@ export const ClassificationSchema = z.object({
 function stripCodeFences(raw: string): string {
   const trimmed = raw.trim();
   const fenceMatch = trimmed.match(/^```(?:json)?\s*\n?([\s\S]*?)\n?```$/);
-  if (fenceMatch) {
-    return fenceMatch[1].trim();
+  let s = fenceMatch ? fenceMatch[1].trim() : trimmed;
+  s = s.replace(/\/\/[^\n]*/g, "");
+  s = s.replace(/#[^\n]*/g, "");
+  s = s.replace(/,\s*([}\]])/g, "$1");
+  return s;
+}
+
+function parseJsonLenient(raw: string): unknown {
+  const cleaned = stripCodeFences(raw);
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    const objMatch = cleaned.match(/\{[\s\S]*\}/);
+    if (objMatch) {
+      try { return JSON.parse(objMatch[0]); } catch { /* fall through */ }
+    }
+    const arrMatch = cleaned.match(/\[[\s\S]*\]/);
+    if (arrMatch) {
+      try { return JSON.parse(arrMatch[0]); } catch { /* fall through */ }
+    }
+    throw new Error(`Failed to parse JSON from LLM response:\n${cleaned.slice(0, 2000)}`);
   }
-  return trimmed;
 }
 
 const CLASSIFYABLE_TYPES: NodeType[] = ["Claim", "Observation", "Decision", "Memory", "Value", "Emotion", "Event"];
@@ -68,8 +86,8 @@ export async function classifySegments(
   const userPrompt = JSON.stringify(segmentsWithIds);
 
   const rawResponse = await client.complete(EXTRACTION_SYSTEM_PROMPT, userPrompt);
+  const parsed = parseJsonLenient(rawResponse);
   const stripped = stripCodeFences(rawResponse);
-  const parsed = JSON.parse(stripped);
 
   let validated;
   try {
@@ -77,7 +95,7 @@ export async function classifySegments(
   } catch (err) {
     if (err instanceof ZodError) {
       const rawTruncated = stripped.length > 3000 ? stripped.slice(0, 3000) + "…[truncated]" : stripped;
-      const classifications = Array.isArray(parsed?.classifications) ? parsed.classifications : [];
+      const classifications = Array.isArray((parsed as any)?.classifications) ? (parsed as any).classifications : [];
       const returnedIds = classifications.map((c: { segment_id?: string }) => c.segment_id ?? "(missing)");
       const extraIds = returnedIds.filter((id: string) => !expectedIds.includes(id));
       const missingIds = expectedIds.filter((id: string) => !returnedIds.includes(id));

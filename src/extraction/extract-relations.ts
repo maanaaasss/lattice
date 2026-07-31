@@ -52,10 +52,28 @@ const RelationExtractionSchema = z.object({
 function stripCodeFences(raw: string): string {
   const trimmed = raw.trim();
   const fenceMatch = trimmed.match(/^```(?:json)?\s*\n?([\s\S]*?)\n?```$/);
-  if (fenceMatch) {
-    return fenceMatch[1].trim();
+  let s = fenceMatch ? fenceMatch[1].trim() : trimmed;
+  s = s.replace(/\/\/[^\n]*/g, "");
+  s = s.replace(/#[^\n]*/g, "");
+  s = s.replace(/,\s*([}\]])/g, "$1");
+  return s;
+}
+
+function parseJsonLenient(raw: string): unknown {
+  const cleaned = stripCodeFences(raw);
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    const objMatch = cleaned.match(/\{[\s\S]*\}/);
+    if (objMatch) {
+      try { return JSON.parse(objMatch[0]); } catch { /* fall through */ }
+    }
+    const arrMatch = cleaned.match(/\[[\s\S]*\]/);
+    if (arrMatch) {
+      try { return JSON.parse(arrMatch[0]); } catch { /* fall through */ }
+    }
+    throw new Error(`Failed to parse JSON from LLM response:\n${cleaned.slice(0, 2000)}`);
   }
-  return trimmed;
 }
 
 export async function extractRelations(
@@ -79,8 +97,8 @@ export async function extractRelations(
     EXTRACT_RELATIONS_SYSTEM_PROMPT,
     userPrompt
   );
+  const parsed = parseJsonLenient(rawResponse);
   const stripped = stripCodeFences(rawResponse);
-  const parsed = JSON.parse(stripped);
 
   let validated;
   try {
@@ -88,7 +106,7 @@ export async function extractRelations(
   } catch (err) {
     if (err instanceof ZodError) {
       const rawTruncated = stripped.length > 5000 ? stripped.slice(0, 5000) + "…[truncated]" : stripped;
-      const edges = Array.isArray(parsed?.edges) ? parsed.edges : [];
+      const edges = Array.isArray((parsed as any)?.edges) ? (parsed as any).edges : [];
       const emptyEvidenceCount = edges.filter(
         (e: { evidence_span?: string }) => typeof e.evidence_span === "string" && e.evidence_span.length === 0
       ).length;

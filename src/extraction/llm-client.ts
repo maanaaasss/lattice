@@ -57,6 +57,15 @@ export class OpenAICompatibleClient implements LLMClient {
           continue;
         }
 
+        if (response.status === 400) {
+          try {
+            const body = JSON.parse(bodyText);
+            if (body?.error?.code === "json_validate_failed" && typeof body?.error?.failed_generation === "string") {
+              return body.error.failed_generation;
+            }
+          } catch { /* not parseable, fall through */ }
+        }
+
         throw new Error(
           `LLM request failed with status ${response.status}: ${bodyText}`
         );
