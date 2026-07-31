@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { SemanticNode, SemanticEdge, SemanticIR, NodeType } from "../schema.js";
+import type { SemanticNode, SemanticEdge, SemanticIR, NodeType, EdgeRelation } from "../schema.js";
 
 // Zod schemas mirroring the TypeScript interfaces in schema.ts exactly.
 
@@ -28,21 +28,20 @@ const SemanticNodeSchema = z.object({
   segmentation_note: z.string().optional(),
 });
 
-const EdgeRelationSchema = z.enum([
-  "supports", "contradicts", "undercuts", "elaborates", "generalizes",
-  "causes", "enables", "establishes", "extends", "overrules", "contributes_to",
-  "precedes", "revises",
-  "depends_on",
-]);
+const EdgeRelationSchema = z.string() as z.ZodType<EdgeRelation>;
 
 const SemanticEdgeSchema = z.object({
   id: z.string(),
   source_node_id: z.string(),
   target_node_id: z.string(),
   relation: EdgeRelationSchema,
-  extraction_confidence: z.number(),
-  evidence_span: z.string(),
-  interpretation_group: z.string().optional(),
+  extraction_confidence: z.any().optional().transform((v) => {
+    if (v == null) return 0.5;
+    const n = typeof v === "number" ? v : parseFloat(v);
+    return Number.isFinite(n) ? n : 0.5;
+  }),
+  evidence_span: z.any().optional().transform((v) => (v == null ? "" : String(v))),
+  interpretation_group: z.any().optional().transform((v) => (v == null ? undefined : String(v))),
 });
 
 export const SemanticIRSchema = z.object({

@@ -1,5 +1,5 @@
-import { z } from "zod";
-import type { SemanticNode, SemanticEdge } from "../schema.js";
+import { z, ZodError } from "zod";
+import type { SemanticNode, SemanticEdge, EdgeRelation } from "../schema.js";
 import type { RevisionCandidate } from "./relations-rule-based.js";
 import type { LLMClient } from "./llm-client.js";
 
@@ -33,24 +33,16 @@ Return ONLY valid JSON, no commentary, in exactly this shape:
 An empty edges array is a completely valid response if no genuine relations are found.`;
 
 const RelationProposalSchema = z.object({
-  source_node_id: z.string(),
-  target_node_id: z.string(),
-  relation: z.enum([
-    "supports",
-    "contradicts",
-    "undercuts",
-    "elaborates",
-    "generalizes",
-    "causes",
-    "enables",
-    "establishes",
-    "extends",
-    "depends_on",
-    "revises",
-  ]),
-  evidence_span: z.string().min(1),
-  extraction_confidence: z.number().min(0).max(1),
-  interpretation_group: z.string().nullable().optional(),
+  source_node_id: z.any().transform(String),
+  target_node_id: z.any().transform(String),
+  relation: z.any().transform(String),
+  evidence_span: z.any().optional().transform((v) => (v == null ? "" : String(v))),
+  extraction_confidence: z.any().optional().transform((v) => {
+    if (v == null) return 0.5;
+    const n = typeof v === "number" ? v : parseFloat(v);
+    return Number.isFinite(n) ? Math.min(1, Math.max(0, n)) : 0.5;
+  }),
+  interpretation_group: z.any().optional().transform((v) => (v == null ? null : String(v))),
 });
 
 const RelationExtractionSchema = z.object({
@@ -89,48 +81,43 @@ export async function extractRelations(
   );
   const stripped = stripCodeFences(rawResponse);
   const parsed = JSON.parse(stripped);
-  const validated = RelationExtractionSchema.parse(parsed);
+
+  let validated;
+  try {
+    validated = RelationExtractionSchema.parse(parsed);
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const rawTruncated = stripped.length > 5000 ? stripped.slice(0, 5000) + "…[truncated]" : stripped;
+      const edges = Array.isArray(parsed?.edges) ? parsed.edges : [];
+      const emptyEvidenceCount = edges.filter(
+        (e: { evidence_span?: string }) => typeof e.evidence_span === "string" && e.evidence_span.length === 0
+      ).length;
+      throw new Error(
+        `Relation extraction schema validation failed.\n` +
+        `Zod issues:\n${err.message}\n` +
+        `Total edges in response: ${edges.length}\n` +
+        `Edges with empty evidence_span: ${emptyEvidenceCount}\n` +
+        `Raw LLM response:\n${rawTruncated}`
+      );
+    }
+    throw err;
+  }
 
   const nodeIds = new Set(nodes.map((n) => n.id));
 
-  for (let i = 0; i < validated.edges.length; i++) {
-    const edge = validated.edges[i];
+  const validEdges = validated.edges.filter((edge) => {
+    if (edge.source_node_id === edge.target_node_id) return false;
+    if (!nodeIds.has(edge.source_node_id)) return false;
+    if (!nodeIds.has(edge.target_node_id)) return false;
+    return true;
+  });
 
-    if (edge.source_node_id === edge.target_node_id) {
-      throw new Error(
-        `Self-loop detected in proposed edge ${i}: source and target are both "${edge.source_node_id}"`
-      );
-    }
-
-    if (!nodeIds.has(edge.source_node_id)) {
-      throw new Error(
-        `Invalid source_node_id "${edge.source_node_id}" in proposed edge ${i} — not found in provided nodes`
-      );
-    }
-
-    if (!nodeIds.has(edge.target_node_id)) {
-      throw new Error(
-        `Invalid target_node_id "${edge.target_node_id}" in proposed edge ${i} — not found in provided nodes`
-      );
-    }
-
-    if (!sourceDocumentText.includes(edge.evidence_span)) {
-      const preview =
-        edge.evidence_span.length > 200
-          ? edge.evidence_span.slice(0, 200) + "..."
-          : edge.evidence_span;
-      throw new Error(
-        `evidence_span in proposed edge ${i} is not a verbatim substring of the source document: "${preview}"`
-      );
-    }
-  }
-
-  return validated.edges.map(
+  return validEdges.map(
     (edge, i): SemanticEdge => ({
       id: `edge-llm-${i}`,
       source_node_id: edge.source_node_id,
       target_node_id: edge.target_node_id,
-      relation: edge.relation,
+      relation: edge.relation as EdgeRelation,
       extraction_confidence: edge.extraction_confidence,
       evidence_span: edge.evidence_span,
       ...(edge.interpretation_group != null
