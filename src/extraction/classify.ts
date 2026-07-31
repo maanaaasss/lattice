@@ -24,14 +24,18 @@ Return ONLY valid JSON, no commentary, in exactly this shape:
 Every segment_id given to you must appear exactly once in the output. Do not invent segment ids. Do not add fields not listed above.`;
 
 const ClassificationItemSchema = z.object({
-  segment_id: z.string(),
-  type: z.string(),
-  subtype: z.string().nullable().optional(),
-  attribution: z.object({
-    type: z.string(),
-    ref: z.string().nullable().optional().transform((v) => v ?? null),
-  }).nullable().optional().transform((v) => v ?? { type: "self", ref: null }),
-  epistemic_confidence: z.number().min(0).max(1).nullable().optional().transform((v) => v ?? null),
+  segment_id: z.any().transform(String),
+  type: z.any().transform(String),
+  subtype: z.any().optional().transform((v) => (v == null ? undefined : String(v))),
+  attribution: z.any().optional().transform((v) => {
+    if (v && typeof v === "object" && typeof v.type === "string") return { type: v.type, ref: v.ref ?? null };
+    return { type: "self", ref: null };
+  }),
+  epistemic_confidence: z.any().optional().transform((v) => {
+    if (v == null) return null;
+    const n = typeof v === "number" ? v : parseFloat(v);
+    return Number.isFinite(n) ? Math.min(1, Math.max(0, n)) : null;
+  }),
 });
 
 export const ClassificationSchema = z.object({

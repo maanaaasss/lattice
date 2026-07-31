@@ -5,10 +5,10 @@ import type { SemanticNode, SemanticEdge, SemanticIR, NodeType } from "../schema
 
 const NodeTypeSchema = z.string() as z.ZodType<NodeType>;
 
-const AttributionSchema = z.object({
-  type: z.string() as z.ZodType<"self" | "citation" | "external">,
-  ref: z.string().nullable(),
-}).nullable().optional().transform((v) => v ?? { type: "self" as const, ref: null });
+const AttributionSchema = z.any().optional().transform((v) => {
+  if (v && typeof v === "object" && typeof v.type === "string") return { type: v.type, ref: v.ref ?? null };
+  return { type: "self" as const, ref: null };
+});
 
 const SemanticNodeSchema = z.object({
   id: z.string(),
@@ -16,11 +16,15 @@ const SemanticNodeSchema = z.object({
   subtype: z.string().optional(),
   text_span: z.string().nullable(),
   source_document_id: z.string(),
-  span_location: z.object({ start: z.number(), end: z.number() }),
+  span_location: z.any().optional().transform((v) => (v && typeof v === "object" ? { start: Number(v.start) || 0, end: Number(v.end) || 0 } : { start: 0, end: 0 })),
   attribution: AttributionSchema,
-  temporal_position: z.string().nullable(),
-  epistemic_confidence: z.number().nullable(),
-  synthetic: z.boolean(),
+  temporal_position: z.any().optional().transform((v) => (v == null ? null : String(v))),
+  epistemic_confidence: z.any().optional().transform((v) => {
+    if (v == null) return null;
+    const n = typeof v === "number" ? v : parseFloat(v);
+    return Number.isFinite(n) ? n : null;
+  }),
+  synthetic: z.any().optional().transform((v) => Boolean(v)),
   segmentation_note: z.string().optional(),
 });
 
