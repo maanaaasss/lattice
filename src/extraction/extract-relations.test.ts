@@ -156,7 +156,7 @@ describe("extractRelations", () => {
 
     await expect(
       extractRelations(nodes, noRevisions, sourceDoc, mockClient(response))
-    ).rejects.toThrow(/not a verbatim substring/);
+    ).rejects.toThrow(/Non-verbatim evidence_span/);
   });
 
   it("throws on a disallowed relation type (e.g. 'precedes') via Zod", async () => {
@@ -185,6 +185,24 @@ describe("extractRelations", () => {
           target_node_id: "seg-1",
           relation: "magically_transforms",
           evidence_span: "I used to believe in fairness.",
+          extraction_confidence: 0.5,
+        },
+      ],
+    });
+
+    await expect(
+      extractRelations(nodes, noRevisions, sourceDoc, mockClient(response))
+    ).rejects.toThrow();
+  });
+
+  it("throws when evidence_span is empty", async () => {
+    const response = JSON.stringify({
+      edges: [
+        {
+          source_node_id: "seg-0",
+          target_node_id: "seg-1",
+          relation: "supports",
+          evidence_span: "",
           extraction_confidence: 0.5,
         },
       ],

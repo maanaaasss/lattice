@@ -32,11 +32,16 @@ Return ONLY valid JSON, no commentary, in exactly this shape:
 
 An empty edges array is a completely valid response if no genuine relations are found.`;
 
+const RELATION_ENUM = [
+  "supports", "contradicts", "undercuts", "elaborates", "generalizes",
+  "causes", "enables", "establishes", "extends", "depends_on", "revises",
+] as const;
+
 const RelationProposalSchema = z.object({
   source_node_id: z.any().transform(String),
   target_node_id: z.any().transform(String),
-  relation: z.any().transform(String),
-  evidence_span: z.any().optional().transform((v) => (v == null ? "" : String(v))),
+  relation: z.enum(RELATION_ENUM),
+  evidence_span: z.string().min(1),
   extraction_confidence: z.any().optional().transform((v) => {
     if (v == null) return 0.5;
     const n = typeof v === "number" ? v : parseFloat(v);
@@ -123,12 +128,29 @@ export async function extractRelations(
 
   const nodeIds = new Set(nodes.map((n) => n.id));
 
-  const validEdges = validated.edges.filter((edge) => {
-    if (edge.source_node_id === edge.target_node_id) return false;
-    if (!nodeIds.has(edge.source_node_id)) return false;
-    if (!nodeIds.has(edge.target_node_id)) return false;
-    return true;
-  });
+  for (const edge of validated.edges) {
+    if (edge.source_node_id === edge.target_node_id) {
+      throw new Error(`Self-loop in proposed edge: source and target are both "${edge.source_node_id}"`);
+    }
+    if (!nodeIds.has(edge.source_node_id)) {
+      throw new Error(`Invalid source_node_id "${edge.source_node_id}" — not found in provided nodes`);
+    }
+    if (!nodeIds.has(edge.target_node_id)) {
+      throw new Error(`Invalid target_node_id "${edge.target_node_id}" — not found in provided nodes`);
+    }
+  }
+  const validEdges = validated.edges;
+
+  for (const edge of validEdges) {
+    if (!sourceDocumentText.includes(edge.evidence_span)) {
+      const preview = edge.evidence_span.length > 80
+        ? edge.evidence_span.slice(0, 80) + "…"
+        : edge.evidence_span;
+      throw new Error(
+        `Non-verbatim evidence_span in edge ${edge.source_node_id}→${edge.target_node_id} (${edge.relation}): "${preview}"`
+      );
+    }
+  }
 
   return validEdges.map(
     (edge, i): SemanticEdge => ({
