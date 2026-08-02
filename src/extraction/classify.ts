@@ -23,13 +23,21 @@ Return ONLY valid JSON, no commentary, in exactly this shape:
 
 Every segment_id given to you must appear exactly once in the output. Do not invent segment ids. Do not add fields not listed above.`;
 
+const ATTRIBUTION_TYPES = ["self", "citation", "external"] as const;
+
 const ClassificationItemSchema = z.object({
-  segment_id: z.any().transform(String),
-  type: z.any().transform(String),
+  segment_id: z.string(),
+  type: z.enum(["Claim", "Observation", "Decision", "Memory", "Value", "Emotion", "Event"]),
   subtype: z.any().optional().transform((v) => (v == null ? undefined : String(v))),
   attribution: z.any().optional().transform((v) => {
-    if (v && typeof v === "object" && typeof v.type === "string") return { type: v.type, ref: v.ref ?? null };
-    return { type: "self", ref: null };
+    if (!v || typeof v !== "object" || typeof v.type !== "string") {
+      return { type: "self" as const, ref: null as string | null };
+    }
+    if (!(ATTRIBUTION_TYPES as readonly string[]).includes(v.type)) {
+      return { type: "self" as const, ref: null as string | null };
+    }
+    const ref = v.ref == null ? null : typeof v.ref === "string" ? v.ref : null;
+    return { type: v.type as "self" | "citation" | "external", ref };
   }),
   epistemic_confidence: z.any().optional().transform((v) => {
     if (v == null) return null;
@@ -113,6 +121,29 @@ export async function classifySegments(
     throw err;
   }
 
+  if (validated.classifications.length !== segments.length) {
+    const returnedIds = validated.classifications.map((c) => c.segment_id);
+    const extraIds = returnedIds.filter((id: string) => !expectedIds.includes(id));
+    const missingIds = expectedIds.filter((id: string) => !returnedIds.includes(id));
+    throw new Error(
+      `Classification count mismatch.\n` +
+      `Batch: seg-${startIndex} to seg-${startIndex + segments.length - 1} (${segments.length} segments expected)\n` +
+      `Actual classifications array length: ${validated.classifications.length}\n` +
+      `Returned segment IDs: ${JSON.stringify(returnedIds)}\n` +
+      `Extra IDs (model invented): ${extraIds.length > 0 ? JSON.stringify(extraIds) : "none"}\n` +
+      `Missing IDs: ${missingIds.length > 0 ? JSON.stringify(missingIds) : "none"}`
+    );
+  }
+
+  const missingClassifications = expectedIds.filter(
+    (id) => !validated.classifications.some((c) => c.segment_id === id)
+  );
+  if (missingClassifications.length > 0) {
+    throw new Error(
+      `Missing classification for segment "${missingClassifications[0]}"`
+    );
+  }
+
   const classificationMap = new Map(
     validated.classifications.map((c) => [c.segment_id, c])
   );
@@ -121,8 +152,7 @@ export async function classifySegments(
   for (let i = 0; i < segments.length; i++) {
     const seg = segments[i];
     const segId = `seg-${startIndex + i}`;
-    const classification = classificationMap.get(segId);
-    if (!classification) continue;
+    const classification = classificationMap.get(segId)!;
 
     nodes.push({
       id: segId,

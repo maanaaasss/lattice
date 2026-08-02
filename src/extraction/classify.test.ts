@@ -177,7 +177,7 @@ describe("classifySegments", () => {
     expect(nodes[2].epistemic_confidence).toBeNull();
   });
 
-  it("throws on malformed epistemic_confidence (wrong type)", async () => {
+  it("coerces malformed epistemic_confidence to null", async () => {
     const malformed = JSON.stringify({
       classifications: [
         {
@@ -202,7 +202,10 @@ describe("classifySegments", () => {
     });
 
     const client = mockClient(malformed);
-    await expect(classifySegments(sampleSegments, "doc-1", client)).rejects.toThrow();
+    const nodes = await classifySegments(sampleSegments, "doc-1", client);
+
+    expect(nodes).toHaveLength(3);
+    expect(nodes[1].epistemic_confidence).toBeNull();
   });
 
   it("tolerates omitted attribution.ref and normalizes to null", async () => {
@@ -237,7 +240,7 @@ describe("classifySegments", () => {
     expect(nodes[2].attribution).toEqual({ type: "self", ref: null });
   });
 
-  it("throws on malformed attribution.ref (wrong type)", async () => {
+  it("coerces malformed attribution.ref to null", async () => {
     const malformedRef = JSON.stringify({
       classifications: [
         {
@@ -262,7 +265,10 @@ describe("classifySegments", () => {
     });
 
     const client = mockClient(malformedRef);
-    await expect(classifySegments(sampleSegments, "doc-1", client)).rejects.toThrow();
+    const nodes = await classifySegments(sampleSegments, "doc-1", client);
+
+    expect(nodes).toHaveLength(3);
+    expect(nodes[1].attribution).toEqual({ type: "self", ref: null });
   });
 
   it("throws on count mismatch (fewer classifications than segments)", async () => {
