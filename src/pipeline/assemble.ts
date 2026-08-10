@@ -26,9 +26,9 @@ const SemanticNodeSchema = z.object({
   source_document_id: z.string(),
   span_location: z.object({ start: z.number(), end: z.number() }),
   attribution: AttributionSchema,
-  temporal_position: z.any().optional().transform((v) => (v == null ? null : String(v))),
+  temporal_position: z.string().nullable(),
   epistemic_confidence: z.number().nullable(),
-  synthetic: z.any().optional().transform((v) => Boolean(v)),
+  synthetic: z.boolean(),
   segmentation_note: z.string().optional(),
 });
 
