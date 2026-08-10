@@ -3,11 +3,19 @@ import type { SemanticNode, SemanticEdge, SemanticIR, NodeType, EdgeRelation } f
 
 // Zod schemas mirroring the TypeScript interfaces in schema.ts exactly.
 
-const NodeTypeSchema = z.string() as z.ZodType<NodeType>;
+const NodeTypeSchema = z.enum(["Claim", "Observation", "Decision", "Memory", "Value", "Emotion", "Event", "Confluence"]);
+
+const ATTRIBUTION_TYPES = ["self", "citation", "external"] as const;
 
 const AttributionSchema = z.any().optional().transform((v) => {
-  if (v && typeof v === "object" && typeof v.type === "string") return { type: v.type, ref: v.ref ?? null };
-  return { type: "self" as const, ref: null };
+  if (!v || typeof v !== "object" || typeof v.type !== "string") {
+    return { type: "self" as const, ref: null as string | null };
+  }
+  if (!(ATTRIBUTION_TYPES as readonly string[]).includes(v.type)) {
+    return { type: "self" as const, ref: null as string | null };
+  }
+  const ref = v.ref == null ? null : typeof v.ref === "string" ? v.ref : null;
+  return { type: v.type as "self" | "citation" | "external", ref };
 });
 
 const SemanticNodeSchema = z.object({
@@ -16,32 +24,28 @@ const SemanticNodeSchema = z.object({
   subtype: z.string().optional(),
   text_span: z.string().nullable(),
   source_document_id: z.string(),
-  span_location: z.any().optional().transform((v) => (v && typeof v === "object" ? { start: Number(v.start) || 0, end: Number(v.end) || 0 } : { start: 0, end: 0 })),
+  span_location: z.object({ start: z.number(), end: z.number() }),
   attribution: AttributionSchema,
   temporal_position: z.any().optional().transform((v) => (v == null ? null : String(v))),
-  epistemic_confidence: z.any().optional().transform((v) => {
-    if (v == null) return null;
-    const n = typeof v === "number" ? v : parseFloat(v);
-    return Number.isFinite(n) ? n : null;
-  }),
+  epistemic_confidence: z.number().nullable(),
   synthetic: z.any().optional().transform((v) => Boolean(v)),
   segmentation_note: z.string().optional(),
 });
 
-const EdgeRelationSchema = z.string() as z.ZodType<EdgeRelation>;
+const EdgeRelationSchema = z.enum([
+  "supports", "contradicts", "undercuts", "elaborates", "generalizes",
+  "causes", "enables", "establishes", "extends", "overrules", "contributes_to",
+  "precedes", "revises", "depends_on",
+]);
 
 const SemanticEdgeSchema = z.object({
   id: z.string(),
   source_node_id: z.string(),
   target_node_id: z.string(),
   relation: EdgeRelationSchema,
-  extraction_confidence: z.any().optional().transform((v) => {
-    if (v == null) return 0.5;
-    const n = typeof v === "number" ? v : parseFloat(v);
-    return Number.isFinite(n) ? n : 0.5;
-  }),
-  evidence_span: z.any().optional().transform((v) => (v == null ? "" : String(v))),
-  interpretation_group: z.any().optional().transform((v) => (v == null ? undefined : String(v))),
+  extraction_confidence: z.number(),
+  evidence_span: z.string().min(1),
+  interpretation_group: z.string().optional(),
 });
 
 export const SemanticIRSchema = z.object({
