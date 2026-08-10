@@ -254,4 +254,53 @@ describe("SemanticIRSchema strictness", () => {
     const result = SemanticIRSchema.safeParse(bad);
     expect(result.success).toBe(false);
   });
+
+  it("rejects a malformed object (invalid temporal_position)", () => {
+    const bad = {
+      document_id: "doc-1",
+      nodes: [
+        {
+          id: "n-1",
+          type: "Claim",
+          text_span: "hello",
+          source_document_id: "doc-1",
+          span_location: { start: 0, end: 5 },
+          attribution: { type: "self", ref: null },
+          temporal_position: 42,
+          epistemic_confidence: null,
+          synthetic: false,
+        },
+      ],
+      edges: [],
+      generated_at: new Date().toISOString(),
+      schema_version: "1.0",
+    };
+
+    const result = SemanticIRSchema.safeParse(bad);
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects a malformed object (invalid synthetic)", () => {
+    const bad = {
+      document_id: "doc-1",
+      nodes: [
+        {
+          id: "n-1",
+          type: "Claim",
+          text_span: "hello",
+          source_document_id: "doc-1",
+          span_location: { start: 0, end: 5 },
+          attribution: { type: "self", ref: null },
+          epistemic_confidence: null,
+          synthetic: "yes",
+        },
+      ],
+      edges: [],
+      generated_at: new Date().toISOString(),
+      schema_version: "1.0",
+    };
+
+    const result = SemanticIRSchema.safeParse(bad);
+    expect(result.success).toBe(false);
+  });
 });
