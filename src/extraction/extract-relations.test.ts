@@ -4,6 +4,7 @@ import type { LLMClient } from "./llm-client.js";
 import type { RevisionCandidate } from "./relations-rule-based.js";
 import {
   extractRelations,
+  extractRelationsBatched,
   EXTRACT_RELATIONS_SYSTEM_PROMPT,
 } from "./extract-relations.js";
 
@@ -302,5 +303,113 @@ describe("extractRelations", () => {
     expect(parsed.revision_candidates[0].matched_marker).toBe(
       "used to...anymore"
     );
+  });
+});
+
+describe("extractRelationsBatched", () => {
+  function edgeResponse(source: string, target: string) {
+    return JSON.stringify({
+      edges: [
+        {
+          source_node_id: source,
+          target_node_id: target,
+          relation: "supports",
+          evidence_span: "I used to believe in fairness.",
+          extraction_confidence: 0.7,
+        },
+      ],
+    });
+  }
+
+  it("calls extractRelations directly when nodes.length <= batchSize", async () => {
+    let callCount = 0;
+    const spy: LLMClient = {
+      async complete(_systemPrompt: string, _userPrompt: string) {
+        callCount++;
+        return edgeResponse("seg-0", "seg-1");
+      },
+    };
+
+    const result = await extractRelationsBatched(nodes, noRevisions, sourceDoc, spy, 5);
+
+    expect(callCount).toBe(1);
+    expect(result).toHaveLength(1);
+    expect(result[0].source_node_id).toBe("seg-0");
+  });
+
+  it("produces globally unique edge ids across multiple batches", async () => {
+    const bigNodes: SemanticNode[] = Array.from({ length: 6 }, (_, i) =>
+      node(`seg-${i}`, `text ${i}`)
+    );
+
+    const spy: LLMClient = {
+      async complete(_systemPrompt: string, userPrompt: string) {
+        const payload = JSON.parse(userPrompt);
+        const batchIds = payload.nodes.map((n: { id: string }) => n.id);
+        const edges = batchIds.slice(0, -1).map((id: string, i: number) => ({
+          source_node_id: id,
+          target_node_id: batchIds[i + 1],
+          relation: "supports" as const,
+          evidence_span: "I used to believe in fairness.",
+          extraction_confidence: 0.5,
+        }));
+        return JSON.stringify({ edges });
+      },
+    };
+
+    const result = await extractRelationsBatched(bigNodes, noRevisions, sourceDoc, spy, 2);
+
+    const ids = result.map((e) => e.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(ids).toEqual([...Array(ids.length)].map((_, i) => `edge-llm-${i}`));
+  });
+
+  it("filters revision candidates per batch", async () => {
+    const bigNodes: SemanticNode[] = Array.from({ length: 6 }, (_, i) =>
+      node(`seg-${i}`, `text ${i}`)
+    );
+    const candidates: RevisionCandidate[] = [
+      { node_id: "seg-1", matched_marker: "marker-a" },
+      { node_id: "seg-4", matched_marker: "marker-b" },
+    ];
+
+    const captured: RevisionCandidate[][] = [];
+    const spy: LLMClient = {
+      async complete(_systemPrompt: string, userPrompt: string) {
+        const payload = JSON.parse(userPrompt);
+        captured.push(payload.revision_candidates);
+        return JSON.stringify({ edges: [] });
+      },
+    };
+
+    await extractRelationsBatched(bigNodes, candidates, sourceDoc, spy, 2);
+
+    expect(captured).toHaveLength(3);
+    expect(captured[0]).toEqual([{ node_id: "seg-1", matched_marker: "marker-a" }]);
+    expect(captured[1]).toEqual([]);
+    expect(captured[2]).toEqual([{ node_id: "seg-4", matched_marker: "marker-b" }]);
+  });
+
+  it("runs batches sequentially, not concurrently", async () => {
+    const bigNodes: SemanticNode[] = Array.from({ length: 6 }, (_, i) =>
+      node(`seg-${i}`, `text ${i}`)
+    );
+
+    let inFlight = 0;
+    let maxConcurrent = 0;
+
+    const spy: LLMClient = {
+      async complete(_systemPrompt: string, _userPrompt: string) {
+        inFlight++;
+        if (inFlight > maxConcurrent) maxConcurrent = inFlight;
+        await new Promise((r) => setTimeout(r, 10));
+        inFlight--;
+        return JSON.stringify({ edges: [] });
+      },
+    };
+
+    await extractRelationsBatched(bigNodes, noRevisions, sourceDoc, spy, 2);
+
+    expect(maxConcurrent).toBe(1);
   });
 });

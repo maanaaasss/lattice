@@ -166,3 +166,30 @@ export async function extractRelations(
     })
   );
 }
+
+// Batches are non-overlapping node windows, so a genuine relation between
+// two nodes in DIFFERENT batches — including revises across a batch boundary
+// — will not be found. This is a deliberate, documented scope limitation,
+// pending real evidence on how often it matters.
+export async function extractRelationsBatched(
+  nodes: SemanticNode[],
+  revisionCandidates: RevisionCandidate[],
+  sourceDocumentText: string,
+  client: LLMClient,
+  batchSize: number = 20
+): Promise<SemanticEdge[]> {
+  if (nodes.length <= batchSize) {
+    return extractRelations(nodes, revisionCandidates, sourceDocumentText, client);
+  }
+
+  const allEdges: SemanticEdge[] = [];
+  for (let i = 0; i < nodes.length; i += batchSize) {
+    const batch = nodes.slice(i, i + batchSize);
+    const batchIds = new Set(batch.map((n) => n.id));
+    const filteredCandidates = revisionCandidates.filter((c) => batchIds.has(c.node_id));
+    const batchEdges = await extractRelations(batch, filteredCandidates, sourceDocumentText, client);
+    allEdges.push(...batchEdges);
+  }
+
+  return allEdges.map((e, i) => ({ ...e, id: `edge-llm-${i}` }));
+}
