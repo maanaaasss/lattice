@@ -23,7 +23,7 @@ import {
   derivePrecedesEdges,
   detectRevisionCandidates,
 } from "../src/extraction/relations-rule-based.js";
-import { extractRelations } from "../src/extraction/extract-relations.js";
+import { extractRelations, extractRelationsBatched } from "../src/extraction/extract-relations.js";
 import { assembleSemanticIR } from "../src/pipeline/assemble.js";
 
 const DEFAULT_TEXT =
@@ -109,11 +109,11 @@ async function main() {
 
   // ── LLM relation extraction ──
   console.log("\n--- Extracting relations (LLM) ---");
-  const llmEdges = await extractRelations(
+  const llmEdges = await extractRelationsBatched(
     nodes,
     revisionCandidates,
     inputText,
-    client
+    rateLimitedClient
   );
   console.log(`LLM edges: ${llmEdges.length}`);
 
