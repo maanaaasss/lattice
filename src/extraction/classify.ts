@@ -175,7 +175,7 @@ export async function classifySegmentsBatched(
   segments: RawSegment[],
   documentId: string,
   client: LLMClient,
-  batchSize: number = 20
+  batchSize: number = 10
 ): Promise<SemanticNode[]> {
   if (segments.length <= batchSize) {
     return classifySegments(segments, documentId, client);
