@@ -83,7 +83,8 @@ export async function classifySegments(
   segments: RawSegment[],
   documentId: string,
   client: LLMClient,
-  startIndex: number = 0
+  startIndex: number = 0,
+  maxRetries: number = 2
 ): Promise<SemanticNode[]> {
   const segmentsWithIds = segments.map((seg, i) => ({
     id: `seg-${startIndex + i}`,
@@ -93,55 +94,65 @@ export async function classifySegments(
   const expectedIds = segmentsWithIds.map((s) => s.id);
   const userPrompt = JSON.stringify(segmentsWithIds);
 
-  const rawResponse = await client.complete(EXTRACTION_SYSTEM_PROMPT, userPrompt);
-  const parsed = parseJsonLenient(rawResponse);
-  const stripped = stripCodeFences(rawResponse);
+  let validated!: z.infer<typeof ClassificationSchema>;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const rawResponse = await client.complete(EXTRACTION_SYSTEM_PROMPT, userPrompt);
+      const parsed = parseJsonLenient(rawResponse);
+      const stripped = stripCodeFences(rawResponse);
 
-  let validated;
-  try {
-    validated = ClassificationSchema.parse(parsed);
-  } catch (err) {
-    if (err instanceof ZodError) {
-      const rawTruncated = stripped.length > 3000 ? stripped.slice(0, 3000) + "…[truncated]" : stripped;
-      const classifications = Array.isArray((parsed as any)?.classifications) ? (parsed as any).classifications : [];
-      const returnedIds = classifications.map((c: { segment_id?: string }) => c.segment_id ?? "(missing)");
-      const extraIds = returnedIds.filter((id: string) => !expectedIds.includes(id));
-      const missingIds = expectedIds.filter((id: string) => !returnedIds.includes(id));
-      throw new Error(
-        `Classification schema validation failed.\n` +
-        `Batch: seg-${startIndex} to seg-${startIndex + segments.length - 1} (${segments.length} segments expected)\n` +
-        `Zod issues:\n${err.message}\n` +
-        `Actual classifications array length: ${classifications.length}\n` +
-        `Returned segment IDs: ${JSON.stringify(returnedIds)}\n` +
-        `Extra IDs (model invented): ${extraIds.length > 0 ? JSON.stringify(extraIds) : "none"}\n` +
-        `Missing IDs: ${missingIds.length > 0 ? JSON.stringify(missingIds) : "none"}\n` +
-        `Raw LLM response:\n${rawTruncated}`
+      try {
+        validated = ClassificationSchema.parse(parsed);
+      } catch (err) {
+        if (err instanceof ZodError) {
+          const rawTruncated = stripped.length > 3000 ? stripped.slice(0, 3000) + "…[truncated]" : stripped;
+          const classifications = Array.isArray((parsed as any)?.classifications) ? (parsed as any).classifications : [];
+          const returnedIds = classifications.map((c: { segment_id?: string }) => c.segment_id ?? "(missing)");
+          const extraIds = returnedIds.filter((id: string) => !expectedIds.includes(id));
+          const missingIds = expectedIds.filter((id: string) => !returnedIds.includes(id));
+          throw new Error(
+            `Classification schema validation failed.\n` +
+            `Batch: seg-${startIndex} to seg-${startIndex + segments.length - 1} (${segments.length} segments expected)\n` +
+            `Zod issues:\n${err.message}\n` +
+            `Actual classifications array length: ${classifications.length}\n` +
+            `Returned segment IDs: ${JSON.stringify(returnedIds)}\n` +
+            `Extra IDs (model invented): ${extraIds.length > 0 ? JSON.stringify(extraIds) : "none"}\n` +
+            `Missing IDs: ${missingIds.length > 0 ? JSON.stringify(missingIds) : "none"}\n` +
+            `Raw LLM response:\n${rawTruncated}`
+          );
+        }
+        throw err;
+      }
+
+      if (validated.classifications.length !== segments.length) {
+        const returnedIds = validated.classifications.map((c) => c.segment_id);
+        const extraIds = returnedIds.filter((id: string) => !expectedIds.includes(id));
+        const missingIds = expectedIds.filter((id: string) => !returnedIds.includes(id));
+        throw new Error(
+          `Classification count mismatch.\n` +
+          `Batch: seg-${startIndex} to seg-${startIndex + segments.length - 1} (${segments.length} segments expected)\n` +
+          `Actual classifications array length: ${validated.classifications.length}\n` +
+          `Returned segment IDs: ${JSON.stringify(returnedIds)}\n` +
+          `Extra IDs (model invented): ${extraIds.length > 0 ? JSON.stringify(extraIds) : "none"}\n` +
+          `Missing IDs: ${missingIds.length > 0 ? JSON.stringify(missingIds) : "none"}`
+        );
+      }
+
+      const missingClassifications = expectedIds.filter(
+        (id) => !validated.classifications.some((c) => c.segment_id === id)
       );
+      if (missingClassifications.length > 0) {
+        throw new Error(
+          `Missing classification for segment "${missingClassifications[0]}"`
+        );
+      }
+
+      break;
+    } catch (err) {
+      if (attempt >= maxRetries) {
+        throw err;
+      }
     }
-    throw err;
-  }
-
-  if (validated.classifications.length !== segments.length) {
-    const returnedIds = validated.classifications.map((c) => c.segment_id);
-    const extraIds = returnedIds.filter((id: string) => !expectedIds.includes(id));
-    const missingIds = expectedIds.filter((id: string) => !returnedIds.includes(id));
-    throw new Error(
-      `Classification count mismatch.\n` +
-      `Batch: seg-${startIndex} to seg-${startIndex + segments.length - 1} (${segments.length} segments expected)\n` +
-      `Actual classifications array length: ${validated.classifications.length}\n` +
-      `Returned segment IDs: ${JSON.stringify(returnedIds)}\n` +
-      `Extra IDs (model invented): ${extraIds.length > 0 ? JSON.stringify(extraIds) : "none"}\n` +
-      `Missing IDs: ${missingIds.length > 0 ? JSON.stringify(missingIds) : "none"}`
-    );
-  }
-
-  const missingClassifications = expectedIds.filter(
-    (id) => !validated.classifications.some((c) => c.segment_id === id)
-  );
-  if (missingClassifications.length > 0) {
-    throw new Error(
-      `Missing classification for segment "${missingClassifications[0]}"`
-    );
   }
 
   const classificationMap = new Map(

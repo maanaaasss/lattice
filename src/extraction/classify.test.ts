@@ -395,6 +395,59 @@ describe("classifySegments", () => {
     expect(nodes[1].id).toBe("seg-6");
     expect(nodes[2].id).toBe("seg-7");
   });
+
+  it("retries on validation failure and succeeds on second attempt", async () => {
+    let callCount = 0;
+    const duplicatingClient: LLMClient = {
+      async complete(_systemPrompt: string, _userPrompt: string) {
+        callCount++;
+        if (callCount === 1) {
+          const duplicated = sampleSegments.flatMap((seg) => [
+            { segment_id: `seg-${sampleSegments.indexOf(seg)}`, type: "Emotion", attribution: { type: "self", ref: null }, epistemic_confidence: null },
+            { segment_id: `seg-${sampleSegments.indexOf(seg)}`, type: "Emotion", attribution: { type: "self", ref: null }, epistemic_confidence: null },
+          ]);
+          return JSON.stringify({ classifications: duplicated });
+        }
+        return validResponse();
+      },
+    };
+
+    const nodes = await classifySegments(sampleSegments, "doc-1", duplicatingClient);
+    expect(callCount).toBe(2);
+    expect(nodes).toHaveLength(3);
+    expect(nodes[0].type).toBe("Emotion");
+  });
+
+  it("exhausts all retries and throws on persistent failure", async () => {
+    let callCount = 0;
+    const alwaysBadClient: LLMClient = {
+      async complete(_systemPrompt: string, _userPrompt: string) {
+        callCount++;
+        const duplicated = sampleSegments.flatMap((seg) => [
+          { segment_id: `seg-${sampleSegments.indexOf(seg)}`, type: "Emotion", attribution: { type: "self", ref: null }, epistemic_confidence: null },
+          { segment_id: `seg-${sampleSegments.indexOf(seg)}`, type: "Emotion", attribution: { type: "self", ref: null }, epistemic_confidence: null },
+        ]);
+        return JSON.stringify({ classifications: duplicated });
+      },
+    };
+
+    await expect(classifySegments(sampleSegments, "doc-1", alwaysBadClient)).rejects.toThrow("Classification count mismatch");
+    expect(callCount).toBe(3);
+  });
+
+  it("makes exactly one call when the first attempt succeeds", async () => {
+    let callCount = 0;
+    const goodClient: LLMClient = {
+      async complete(_systemPrompt: string, _userPrompt: string) {
+        callCount++;
+        return validResponse();
+      },
+    };
+
+    const nodes = await classifySegments(sampleSegments, "doc-1", goodClient);
+    expect(callCount).toBe(1);
+    expect(nodes).toHaveLength(3);
+  });
 });
 
 describe("classifySegmentsBatched", () => {
