@@ -1,4 +1,4 @@
-import { z, ZodError } from "zod";
+import { z } from "zod";
 import type { SemanticNode, SemanticEdge, EdgeRelation } from "../schema.js";
 import type { RevisionCandidate } from "./relations-rule-based.js";
 import type { LLMClient } from "./llm-client.js";
@@ -50,9 +50,6 @@ const RelationProposalSchema = z.object({
   interpretation_group: z.any().optional().transform((v) => (v == null ? null : String(v))),
 });
 
-const RelationExtractionSchema = z.object({
-  edges: z.array(RelationProposalSchema),
-});
 
 function stripCodeFences(raw: string): string {
   const trimmed = raw.trim();
@@ -103,53 +100,63 @@ export async function extractRelations(
     userPrompt
   );
   const parsed = parseJsonLenient(rawResponse);
-  const stripped = stripCodeFences(rawResponse);
 
-  let validated;
-  try {
-    validated = RelationExtractionSchema.parse(parsed);
-  } catch (err) {
-    if (err instanceof ZodError) {
-      const rawTruncated = stripped.length > 5000 ? stripped.slice(0, 5000) + "…[truncated]" : stripped;
-      const edges = Array.isArray((parsed as any)?.edges) ? (parsed as any).edges : [];
-      const emptyEvidenceCount = edges.filter(
-        (e: { evidence_span?: string }) => typeof e.evidence_span === "string" && e.evidence_span.length === 0
-      ).length;
-      throw new Error(
-        `Relation extraction schema validation failed.\n` +
-        `Zod issues:\n${err.message}\n` +
-        `Total edges in response: ${edges.length}\n` +
-        `Edges with empty evidence_span: ${emptyEvidenceCount}\n` +
-        `Raw LLM response:\n${rawTruncated}`
-      );
-    }
-    throw err;
-  }
+  // Rejecting one edge must never discard other, independently valid edges
+  // from the same batch. We rechecked this after seeing real documents where
+  // a single unrelated bad edge caused entirely correct results to be thrown
+  // away — the old throw-on-first-failure approach from a few commits ago.
+  const rawEdges: unknown[] =
+    parsed != null &&
+    typeof parsed === "object" &&
+    Array.isArray((parsed as any).edges)
+      ? (parsed as any).edges
+      : [];
 
   const nodeIds = new Set(nodes.map((n) => n.id));
+  const validEdges: z.infer<typeof RelationProposalSchema>[] = [];
 
-  for (const edge of validated.edges) {
+  for (const raw of rawEdges) {
+    const result = RelationProposalSchema.safeParse(raw);
+    if (!result.success) {
+      console.warn(
+        `Skipping malformed edge (failed schema validation):`,
+        raw,
+        result.error
+      );
+      continue;
+    }
+    const edge = result.data;
+
     if (edge.source_node_id === edge.target_node_id) {
-      throw new Error(`Self-loop in proposed edge: source and target are both "${edge.source_node_id}"`);
+      console.warn(
+        `Skipping edge with self-loop: source and target are both "${edge.source_node_id}"`
+      );
+      continue;
     }
     if (!nodeIds.has(edge.source_node_id)) {
-      throw new Error(`Invalid source_node_id "${edge.source_node_id}" — not found in provided nodes`);
+      console.warn(
+        `Skipping edge with invalid source_node_id "${edge.source_node_id}" — not found in provided nodes`
+      );
+      continue;
     }
     if (!nodeIds.has(edge.target_node_id)) {
-      throw new Error(`Invalid target_node_id "${edge.target_node_id}" — not found in provided nodes`);
-    }
-  }
-  const validEdges = validated.edges;
-
-  for (const edge of validEdges) {
-    if (!sourceDocumentText.includes(edge.evidence_span)) {
-      const preview = edge.evidence_span.length > 80
-        ? edge.evidence_span.slice(0, 80) + "…"
-        : edge.evidence_span;
-      throw new Error(
-        `Non-verbatim evidence_span in edge ${edge.source_node_id}→${edge.target_node_id} (${edge.relation}): "${preview}"`
+      console.warn(
+        `Skipping edge with invalid target_node_id "${edge.target_node_id}" — not found in provided nodes`
       );
+      continue;
     }
+    if (!sourceDocumentText.includes(edge.evidence_span)) {
+      const preview =
+        edge.evidence_span.length > 80
+          ? edge.evidence_span.slice(0, 80) + "…"
+          : edge.evidence_span;
+      console.warn(
+        `Skipping edge with non-verbatim evidence_span in edge ${edge.source_node_id}→${edge.target_node_id} (${edge.relation}): "${preview}"`
+      );
+      continue;
+    }
+
+    validEdges.push(edge);
   }
 
   return validEdges.map(

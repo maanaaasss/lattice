@@ -88,7 +88,15 @@ describe("extractRelations", () => {
     expect(edges[1].interpretation_group).toBeUndefined();
   });
 
-  it("throws when source_node_id is not in the node list", async () => {
+  const validEdge = {
+    source_node_id: "seg-0",
+    target_node_id: "seg-1",
+    relation: "supports",
+    evidence_span: "I used to believe in fairness.",
+    extraction_confidence: 0.7,
+  };
+
+  it("excludes invalid source_node_id but keeps co-present valid edge", async () => {
     const response = JSON.stringify({
       edges: [
         {
@@ -98,15 +106,23 @@ describe("extractRelations", () => {
           evidence_span: "I used to believe in fairness.",
           extraction_confidence: 0.5,
         },
+        validEdge,
       ],
     });
 
-    await expect(
-      extractRelations(nodes, noRevisions, sourceDoc, mockClient(response))
-    ).rejects.toThrow(/Invalid source_node_id "seg-99"/);
+    const edges = await extractRelations(
+      nodes,
+      noRevisions,
+      sourceDoc,
+      mockClient(response)
+    );
+
+    expect(edges).toHaveLength(1);
+    expect(edges[0].source_node_id).toBe("seg-0");
+    expect(edges[0].target_node_id).toBe("seg-1");
   });
 
-  it("throws when target_node_id is not in the node list", async () => {
+  it("excludes invalid target_node_id but keeps co-present valid edge", async () => {
     const response = JSON.stringify({
       edges: [
         {
@@ -116,15 +132,23 @@ describe("extractRelations", () => {
           evidence_span: "I used to believe in fairness.",
           extraction_confidence: 0.5,
         },
+        validEdge,
       ],
     });
 
-    await expect(
-      extractRelations(nodes, noRevisions, sourceDoc, mockClient(response))
-    ).rejects.toThrow(/Invalid target_node_id "seg-99"/);
+    const edges = await extractRelations(
+      nodes,
+      noRevisions,
+      sourceDoc,
+      mockClient(response)
+    );
+
+    expect(edges).toHaveLength(1);
+    expect(edges[0].source_node_id).toBe("seg-0");
+    expect(edges[0].target_node_id).toBe("seg-1");
   });
 
-  it("throws on a self-loop", async () => {
+  it("excludes self-loop but keeps co-present valid edge", async () => {
     const response = JSON.stringify({
       edges: [
         {
@@ -134,15 +158,23 @@ describe("extractRelations", () => {
           evidence_span: "I used to believe in fairness.",
           extraction_confidence: 0.6,
         },
+        validEdge,
       ],
     });
 
-    await expect(
-      extractRelations(nodes, noRevisions, sourceDoc, mockClient(response))
-    ).rejects.toThrow(/Self-loop.*seg-0/);
+    const edges = await extractRelations(
+      nodes,
+      noRevisions,
+      sourceDoc,
+      mockClient(response)
+    );
+
+    expect(edges).toHaveLength(1);
+    expect(edges[0].source_node_id).toBe("seg-0");
+    expect(edges[0].target_node_id).toBe("seg-1");
   });
 
-  it("throws when evidence_span is not a verbatim substring of sourceDocumentText", async () => {
+  it("excludes non-verbatim evidence_span but keeps co-present valid edge", async () => {
     const response = JSON.stringify({
       edges: [
         {
@@ -152,15 +184,23 @@ describe("extractRelations", () => {
           evidence_span: "this text does not appear in the source document",
           extraction_confidence: 0.5,
         },
+        validEdge,
       ],
     });
 
-    await expect(
-      extractRelations(nodes, noRevisions, sourceDoc, mockClient(response))
-    ).rejects.toThrow(/Non-verbatim evidence_span/);
+    const edges = await extractRelations(
+      nodes,
+      noRevisions,
+      sourceDoc,
+      mockClient(response)
+    );
+
+    expect(edges).toHaveLength(1);
+    expect(edges[0].source_node_id).toBe("seg-0");
+    expect(edges[0].target_node_id).toBe("seg-1");
   });
 
-  it("throws on a disallowed relation type (e.g. 'precedes') via Zod", async () => {
+  it("excludes disallowed relation type (e.g. 'precedes') but keeps co-present valid edge", async () => {
     const response = JSON.stringify({
       edges: [
         {
@@ -170,15 +210,22 @@ describe("extractRelations", () => {
           evidence_span: "I used to believe in fairness.",
           extraction_confidence: 1.0,
         },
+        validEdge,
       ],
     });
 
-    await expect(
-      extractRelations(nodes, noRevisions, sourceDoc, mockClient(response))
-    ).rejects.toThrow();
+    const edges = await extractRelations(
+      nodes,
+      noRevisions,
+      sourceDoc,
+      mockClient(response)
+    );
+
+    expect(edges).toHaveLength(1);
+    expect(edges[0].relation).toBe("supports");
   });
 
-  it("throws on an invented relation type via Zod", async () => {
+  it("excludes invented relation type but keeps co-present valid edge", async () => {
     const response = JSON.stringify({
       edges: [
         {
@@ -188,15 +235,22 @@ describe("extractRelations", () => {
           evidence_span: "I used to believe in fairness.",
           extraction_confidence: 0.5,
         },
+        validEdge,
       ],
     });
 
-    await expect(
-      extractRelations(nodes, noRevisions, sourceDoc, mockClient(response))
-    ).rejects.toThrow();
+    const edges = await extractRelations(
+      nodes,
+      noRevisions,
+      sourceDoc,
+      mockClient(response)
+    );
+
+    expect(edges).toHaveLength(1);
+    expect(edges[0].relation).toBe("supports");
   });
 
-  it("throws when evidence_span is empty", async () => {
+  it("excludes empty evidence_span but keeps co-present valid edge", async () => {
     const response = JSON.stringify({
       edges: [
         {
@@ -206,12 +260,20 @@ describe("extractRelations", () => {
           evidence_span: "",
           extraction_confidence: 0.5,
         },
+        validEdge,
       ],
     });
 
-    await expect(
-      extractRelations(nodes, noRevisions, sourceDoc, mockClient(response))
-    ).rejects.toThrow();
+    const edges = await extractRelations(
+      nodes,
+      noRevisions,
+      sourceDoc,
+      mockClient(response)
+    );
+
+    expect(edges).toHaveLength(1);
+    expect(edges[0].source_node_id).toBe("seg-0");
+    expect(edges[0].evidence_span).toBe("I used to believe in fairness.");
   });
 
   it("preserves interpretation_group when two edges share one", async () => {
@@ -281,6 +343,47 @@ describe("extractRelations", () => {
     expect(parsed.nodes[0].type).toBe("Claim");
     expect(parsed.nodes[0].text).toBe("I used to believe in fairness.");
     expect(parsed.revision_candidates).toEqual([]);
+  });
+
+  it("returns empty array when every edge is invalid", async () => {
+    const response = JSON.stringify({
+      edges: [
+        {
+          source_node_id: "seg-0",
+          target_node_id: "seg-0",
+          relation: "elaborates",
+          evidence_span: "I used to believe in fairness.",
+          extraction_confidence: 0.6,
+        },
+        {
+          source_node_id: "seg-99",
+          target_node_id: "seg-1",
+          relation: "supports",
+          evidence_span: "I used to believe in fairness.",
+          extraction_confidence: 0.5,
+        },
+      ],
+    });
+
+    const edges = await extractRelations(
+      nodes,
+      noRevisions,
+      sourceDoc,
+      mockClient(response)
+    );
+
+    expect(edges).toHaveLength(0);
+  });
+
+  it("throws on completely unparseable JSON", async () => {
+    await expect(
+      extractRelations(
+        nodes,
+        noRevisions,
+        sourceDoc,
+        mockClient("this is not json at all {{{")
+      )
+    ).rejects.toThrow(/Failed to parse JSON/);
   });
 
   it("includes revision candidates in the user prompt", async () => {
