@@ -7,7 +7,7 @@ import {
   derivePrecedesEdges,
   detectRevisionCandidates,
 } from "../src/extraction/relations-rule-based.js";
-import { extractRelations } from "../src/extraction/extract-relations.js";
+import { extractRelationsBatched } from "../src/extraction/extract-relations.js";
 import { assembleSemanticIR } from "../src/pipeline/assemble.js";
 
 interface SemanticIRSettings {
@@ -86,11 +86,12 @@ export default class SemanticIRPlugin extends Plugin {
       const revisionCandidates = detectRevisionCandidates(nodes);
 
       // 4. LLM relations
-      const llmEdges = await extractRelations(
+      const llmEdges = await extractRelationsBatched(
         nodes,
         revisionCandidates,
         inputText,
-        client
+        rateLimitedClient,
+        20
       );
 
       // 5. Assemble
