@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { OpenAICompatibleClient } from "./llm-client.js";
+import { OpenAICompatibleClient, DailyTokenLimitError } from "./llm-client.js";
 
 function makeClient() {
   return new OpenAICompatibleClient({
@@ -288,6 +288,86 @@ describe("OpenAICompatibleClient retry-on-429", () => {
 
     expect(fetchSpy).toHaveBeenCalledTimes(2);
     expect(fetchSpy.mock.calls[0][1].body).toBe(fetchSpy.mock.calls[1][1].body);
+    vi.useRealTimers();
+  });
+});
+
+describe("OpenAICompatibleClient daily token limit (TPD)", () => {
+  const TPD_BODY = '{"error":{"message":"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kdyjjc50e6xb2qnxyj43kv66` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 197494, Requested 4035. Please try again in 11m0.528s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"compound","code":"rate_limit_exceeded"}}';
+
+  const TPM_BODY = '{"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` in organization `org_01kdyjjc50e6xb2qnxyj43kv66` service tier `on_demand` on tokens per minute (TPM): Limit 12000, Used 8560, Requested 4177. Please try again in 3.685s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"compound","code":"rate_limit_exceeded"}}';
+
+  function tpdResponse() {
+    return new Response(TPD_BODY, {
+      status: 429,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  function tpmResponse() {
+    return new Response(TPM_BODY, {
+      status: 429,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  function successResponse(content: string) {
+    return jsonResponse({
+      choices: [{ message: { content } }],
+    });
+  }
+
+  it("throws DailyTokenLimitError immediately on TPD 429 with exactly 1 fetch call and zero retries", async () => {
+    const fetchSpy = vi.fn().mockResolvedValueOnce(tpdResponse());
+    vi.stubGlobal("fetch", fetchSpy);
+
+    const client = new OpenAICompatibleClient({
+      baseUrl: "https://api.example.com/v1",
+      apiKey: "test-key",
+      model: "test-model",
+      maxRetries: 3,
+    });
+
+    const err: unknown = await client.complete("sys", "usr").catch((e) => e);
+    expect(err).toBeInstanceOf(DailyTokenLimitError);
+    expect((err as Error).message).toContain("tokens per day (TPD)");
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("includes the full raw Groq message in DailyTokenLimitError", async () => {
+    const fetchSpy = vi.fn().mockResolvedValueOnce(tpdResponse());
+    vi.stubGlobal("fetch", fetchSpy);
+
+    const client = makeClient();
+
+    const err: unknown = await client.complete("sys", "usr").catch((e) => e);
+    expect(err).toBeInstanceOf(DailyTokenLimitError);
+    expect((err as DailyTokenLimitError).message).toContain("openai/gpt-oss-120b");
+    expect((err as DailyTokenLimitError).message).toContain("200000");
+    expect((err as DailyTokenLimitError).message).toContain("try again in 11m0.528s");
+  });
+
+  it("TPM 429 still retries normally — not affected by TPD detection", async () => {
+    vi.useFakeTimers();
+    const fetchSpy = vi.fn()
+      .mockResolvedValueOnce(tpmResponse())
+      .mockResolvedValueOnce(successResponse("ok after tpm retry"));
+    vi.stubGlobal("fetch", fetchSpy);
+
+    const client = new OpenAICompatibleClient({
+      baseUrl: "https://api.example.com/v1",
+      apiKey: "test-key",
+      model: "test-model",
+    });
+
+    const promise = client.complete("sys", "usr");
+
+    // TPM body says "try again in 3.685s" → 3685ms + 500ms safety = 4185ms
+    await vi.advanceTimersByTimeAsync(4200);
+
+    const result = await promise;
+    expect(result).toBe("ok after tpm retry");
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
     vi.useRealTimers();
   });
 });

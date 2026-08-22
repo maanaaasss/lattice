@@ -2,6 +2,13 @@ export interface LLMClient {
   complete(systemPrompt: string, userPrompt: string): Promise<string>;
 }
 
+export class DailyTokenLimitError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "DailyTokenLimitError";
+  }
+}
+
 export class OpenAICompatibleClient implements LLMClient {
   private baseUrl: string;
   private apiKey: string;
@@ -51,6 +58,15 @@ export class OpenAICompatibleClient implements LLMClient {
         const bodyText = await response.text();
 
         if (response.status === 429 && retriesLeft > 0) {
+          try {
+            const body = JSON.parse(bodyText);
+            if (typeof body?.error?.message === "string" && /tokens per day/i.test(body.error.message)) {
+              throw new DailyTokenLimitError(body.error.message);
+            }
+          } catch (e) {
+            if (e instanceof DailyTokenLimitError) throw e;
+            /* not parseable or no message field — fall through to retry */
+          }
           retriesLeft--;
           const waitMs = this.parseRetryAfter(response.headers, bodyText);
           await new Promise((resolve) => setTimeout(resolve, waitMs));
