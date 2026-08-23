@@ -54,8 +54,8 @@ async function main() {
   const causalDirectionOnly = process.argv.slice(2).includes("--causal-direction-only");
   const client = new OpenAICompatibleClient({ baseUrl, apiKey, model });
   const rateLimitedClient = new RateLimitedClient(client, {
-    tpmLimit: 6000,
-    maxTokensPerCall: 2048,
+    tpmLimit: 8000,
+    maxTokensPerCall: 4096,
   });
 
   if (directionOnly) {

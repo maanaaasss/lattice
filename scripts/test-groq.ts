@@ -16,8 +16,7 @@ async function main() {
   const baseUrl = process.env.LLM_BASE_URL!;
   const model = process.env.LLM_MODEL!;
 
-  // Use 2048 to stay within Groq free-tier TPM
-  const client = new OpenAICompatibleClient({ baseUrl, apiKey, model, maxTokens: 2048 });
+  const client = new OpenAICompatibleClient({ baseUrl, apiKey, model, maxTokens: 4096 });
 
   console.log("--- Segmenting ---");
   const segments = segmentText(inputText);

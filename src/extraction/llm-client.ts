@@ -20,11 +20,11 @@ export class OpenAICompatibleClient implements LLMClient {
     this.baseUrl = config.baseUrl.replace(/\/+$/, "");
     this.apiKey = config.apiKey;
     this.model = config.model;
-    // Default to 2048 — confirmed safe for Groq's free tier (6000 TPM);
-    // 8192 caused immediate 413 (TPM budget exceeded) even on tiny requests.
-    // Still not sufficient for large documents (needs chunking) and not
-    // verified against every provider. Override via config.maxTokens.
-    this.maxTokens = config.maxTokens ?? 2048;
+    // Default to 4096 — enough for a 10-20 segment classification batch's JSON
+    // output on gpt-oss-20b.  Keeps reserved cost under Groq's 8K TPM limit so
+    // RateLimitedClient can actually enforce its sliding window.  Override via
+    // config.maxTokens.
+    this.maxTokens = config.maxTokens ?? 4096;
     this.maxRetries = config.maxRetries ?? 3;
   }
 
