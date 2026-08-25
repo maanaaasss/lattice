@@ -39,7 +39,7 @@ describe("estimateTokens", () => {
 describe("RateLimitedClient", () => {
   it("single call under tpmLimit resolves without delay", async () => {
     const inner = mockClient("hello");
-    const client = new RateLimitedClient(inner, { tpmLimit: 100_000, maxTokensPerCall: 1000 });
+    const client = new RateLimitedClient(inner, { tpmLimit: 100_000, reservedCompletionTokens: 1000 });
 
     const result = await client.complete("system", "user");
     expect(result).toBe("hello");
@@ -50,7 +50,7 @@ describe("RateLimitedClient", () => {
     // cost per call = estimateTokens("su") + 100 = ceil(2/4) + 100 = 101
     // tpmLimit = 200 → room for one call, second call needs to wait
     const inner = mockClient("result");
-    const client = new RateLimitedClient(inner, { tpmLimit: 200, maxTokensPerCall: 100 });
+    const client = new RateLimitedClient(inner, { tpmLimit: 200, reservedCompletionTokens: 100 });
 
     // First call fits (101 <= 200)
     const r1 = await client.complete("s", "u");
@@ -78,7 +78,7 @@ describe("RateLimitedClient", () => {
 
   it("expired entry no longer counts against window", async () => {
     const inner = mockClient("ok");
-    const client = new RateLimitedClient(inner, { tpmLimit: 200, maxTokensPerCall: 100 });
+    const client = new RateLimitedClient(inner, { tpmLimit: 200, reservedCompletionTokens: 100 });
 
     // First call: cost = 101
     await client.complete("s", "u");
@@ -92,11 +92,11 @@ describe("RateLimitedClient", () => {
     expect(inner.calls).toHaveLength(2);
   });
 
-  it("estimateTokens and maxTokensPerCall are summed correctly", async () => {
+  it("estimateTokens and reservedCompletionTokens are summed correctly", async () => {
     // systemPrompt = "abcde" (5 chars → 2 tokens), userPrompt = "abcde" (5 chars → 2 tokens)
     // cost = estimateTokens("abcdeabcde") + 500 = ceil(10/4) + 500 = 3 + 500 = 503
     const inner = mockClient("r");
-    const client = new RateLimitedClient(inner, { tpmLimit: 600, maxTokensPerCall: 500 });
+    const client = new RateLimitedClient(inner, { tpmLimit: 600, reservedCompletionTokens: 500 });
 
     // First call: 503 <= 600, fits
     await client.complete("abcde", "abcde");
@@ -116,7 +116,7 @@ describe("RateLimitedClient", () => {
 
   it("transparent decorator — passes prompts unchanged and returns inner result", async () => {
     const inner = mockClient("decoration");
-    const client = new RateLimitedClient(inner, { tpmLimit: 1_000_000, maxTokensPerCall: 1000 });
+    const client = new RateLimitedClient(inner, { tpmLimit: 1_000_000, reservedCompletionTokens: 1000 });
 
     const result = await client.complete("You are helpful.", "What is 2+2?");
     expect(inner.calls[0]).toEqual({

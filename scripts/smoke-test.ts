@@ -55,7 +55,7 @@ async function main() {
   const client = new OpenAICompatibleClient({ baseUrl, apiKey, model });
   const rateLimitedClient = new RateLimitedClient(client, {
     tpmLimit: 8000,
-    maxTokensPerCall: 4096,
+    reservedCompletionTokens: 3000,
   });
 
   if (directionOnly) {

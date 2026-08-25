@@ -72,7 +72,7 @@ export default class SemanticIRPlugin extends Plugin {
       });
       const rateLimitedClient = new RateLimitedClient(client, {
         tpmLimit: 8000,
-        maxTokensPerCall: 4096,
+        reservedCompletionTokens: 3000,
       });
 
       // 1. Segment
