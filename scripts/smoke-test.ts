@@ -58,6 +58,20 @@ async function main() {
     reservedCompletionTokens: 3000,
   });
 
+  // Relation extraction needs a higher maxTokens — the reasoning model
+  // spent all 4096 tokens reasoning about relations and produced zero
+  // content.  8192/7000 are a first attempt, not yet empirically verified;
+  // the next run's finish_reason/usage data should confirm or revise.
+  const relationClient = new OpenAICompatibleClient({ baseUrl, apiKey, model, maxTokens: 8192 });
+  const relationRateLimitedClient = new RateLimitedClient(relationClient, {
+    tpmLimit: 8000,
+    // A single relation-extraction call's reserved cost (~4909 input + 7000
+    // reserved ≈ 11900) can exceed the entire 8K TPM budget, so the
+    // proactive limiter may not meaningfully apply here — retry-on-429 is
+    // the practical safety net, not the proactive wait.
+    reservedCompletionTokens: 7000,
+  });
+
   if (directionOnly) {
     await runDirectionalityCheck(client);
     return;
@@ -113,7 +127,8 @@ async function main() {
     nodes,
     revisionCandidates,
     inputText,
-    rateLimitedClient
+    relationRateLimitedClient,
+    10
   );
   console.log(`LLM edges: ${llmEdges.length}`);
 
