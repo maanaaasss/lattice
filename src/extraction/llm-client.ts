@@ -103,6 +103,14 @@ export class OpenAICompatibleClient implements LLMClient {
         );
       }
 
+      if (data.usage) {
+        const { prompt_tokens, completion_tokens, total_tokens } = data.usage;
+        const reasoning_tokens = data.usage.completion_tokens_details?.reasoning_tokens;
+        console.log(
+          `[LLM usage] prompt=${prompt_tokens} completion=${completion_tokens} reasoning=${reasoning_tokens ?? "n/a"} total=${total_tokens}`
+        );
+      }
+
       return choice.message.content;
     }
   }

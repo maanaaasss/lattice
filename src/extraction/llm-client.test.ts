@@ -371,3 +371,94 @@ describe("OpenAICompatibleClient daily token limit (TPD)", () => {
     vi.useRealTimers();
   });
 });
+
+describe("OpenAICompatibleClient usage logging", () => {
+  function successWithUsage(content: string, usage: Record<string, unknown>) {
+    return new Response(
+      JSON.stringify({ choices: [{ message: { content } }], usage }),
+      { status: 200, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
+  function successWithoutUsage(content: string) {
+    return new Response(
+      JSON.stringify({ choices: [{ message: { content } }] }),
+      { status: 200, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
+  it("logs the exact usage line when usage object includes reasoning_tokens", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        successWithUsage("response text", {
+          prompt_tokens: 100,
+          completion_tokens: 50,
+          total_tokens: 150,
+          completion_tokens_details: { reasoning_tokens: 30 },
+        })
+      )
+    );
+
+    const client = new OpenAICompatibleClient({
+      baseUrl: "https://api.example.com/v1",
+      apiKey: "test-key",
+      model: "test-model",
+    });
+
+    await client.complete("sys", "usr");
+
+    expect(logSpy).toHaveBeenCalledWith(
+      "[LLM usage] prompt=100 completion=50 reasoning=30 total=150"
+    );
+  });
+
+  it("logs the usage line with reasoning=n/a when completion_tokens_details is absent", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        successWithUsage("response text", {
+          prompt_tokens: 200,
+          completion_tokens: 80,
+          total_tokens: 280,
+          // no completion_tokens_details — non-reasoning-model shape
+        })
+      )
+    );
+
+    const client = new OpenAICompatibleClient({
+      baseUrl: "https://api.example.com/v1",
+      apiKey: "test-key",
+      model: "test-model",
+    });
+
+    await client.complete("sys", "usr");
+
+    expect(logSpy).toHaveBeenCalledWith(
+      "[LLM usage] prompt=200 completion=80 reasoning=n/a total=280"
+    );
+  });
+
+  it("does not log anything and still returns content when usage is absent", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(successWithoutUsage("content without usage"))
+    );
+
+    const client = new OpenAICompatibleClient({
+      baseUrl: "https://api.example.com/v1",
+      apiKey: "test-key",
+      model: "test-model",
+    });
+
+    const result = await client.complete("sys", "usr");
+
+    // Call must succeed and return the correct content
+    expect(result).toBe("content without usage");
+    // No usage line should have been logged
+    expect(logSpy).not.toHaveBeenCalled();
+  });
+});
