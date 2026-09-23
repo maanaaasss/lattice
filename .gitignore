@@ -8,3 +8,4 @@ obsidian-plugin/main.js
 coverage/
 .DS_Store
 *.log
+test-vault/
