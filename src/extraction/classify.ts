@@ -77,8 +77,6 @@ function parseJsonLenient(raw: string): unknown {
   }
 }
 
-const CLASSIFYABLE_TYPES: NodeType[] = ["Claim", "Observation", "Decision", "Memory", "Value", "Emotion", "Event"];
-
 export async function classifySegments(
   segments: RawSegment[],
   documentId: string,

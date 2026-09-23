@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { SemanticNode, SemanticEdge, SemanticIR, NodeType, EdgeRelation } from "../schema.js";
+import type { SemanticNode, SemanticEdge, SemanticIR } from "../schema.js";
 
 // Zod schemas mirroring the TypeScript interfaces in schema.ts exactly.
 

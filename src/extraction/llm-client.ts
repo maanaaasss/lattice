@@ -50,7 +50,7 @@ export class OpenAICompatibleClient implements LLMClient {
 
     let retriesLeft = this.maxRetries;
 
-    // eslint-disable-next-line no-constant-condition
+    // eslint-disable-next-line no-constant-condition -- intentional: loop exits via return/throw in body
     while (true) {
       const response = await fetch(`${this.baseUrl}/chat/completions`, requestInit);
 

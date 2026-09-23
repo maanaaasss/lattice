@@ -172,7 +172,7 @@ class SemanticIRSettingTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
 
-    containerEl.createEl("h2", { text: "Lattice" });
+    new Setting(containerEl).setName("Lattice").setHeading();
 
     new Setting(containerEl)
       .setName("LLM Base URL")
