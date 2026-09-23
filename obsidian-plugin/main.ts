@@ -172,8 +172,6 @@ class SemanticIRSettingTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
 
-    new Setting(containerEl).setName("Lattice").setHeading();
-
     new Setting(containerEl)
       .setName("LLM Base URL")
       .setDesc("e.g. https://api.openai.com/v1")
