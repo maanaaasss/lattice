@@ -1,6 +1,6 @@
 import { App, Notice, Plugin, PluginSettingTab, Setting } from "obsidian";
 import { segmentText } from "../src/segmentation/segment.js";
-import { OpenAICompatibleClient } from "../src/extraction/llm-client.js";
+import { OpenAICompatibleClient, DailyTokenLimitError } from "../src/extraction/llm-client.js";
 import { classifySegmentsBatched } from "../src/extraction/classify.js";
 import { RateLimitedClient } from "../src/extraction/rate-limited-client.js";
 import {
@@ -14,12 +14,17 @@ interface SemanticIRSettings {
   llmBaseUrl: string;
   llmApiKey: string;
   llmModel: string;
+  tpmLimit: number;
 }
 
 const DEFAULT_SETTINGS: SemanticIRSettings = {
   llmBaseUrl: "",
   llmApiKey: "",
   llmModel: "",
+  // Client-side throttle only — not the provider's actual limit.
+  // Conservative default that works on most free tiers; raise it if your
+  // provider allows more and you want faster processing.
+  tpmLimit: 8000,
 };
 
 export default class SemanticIRPlugin extends Plugin {
@@ -30,7 +35,7 @@ export default class SemanticIRPlugin extends Plugin {
 
     this.addCommand({
       id: "compile-current-note",
-      name: "Compile current note into Semantic IR",
+      name: "Compile current note",
       callback: () => this.compileCurrentNote(),
     });
 
@@ -71,7 +76,7 @@ export default class SemanticIRPlugin extends Plugin {
         model: this.settings.llmModel,
       });
       const rateLimitedClient = new RateLimitedClient(client, {
-        tpmLimit: 8000,
+        tpmLimit: this.settings.tpmLimit,
         reservedCompletionTokens: 3000,
       });
 
@@ -86,7 +91,7 @@ export default class SemanticIRPlugin extends Plugin {
         maxTokens: 8192,
       });
       const relationRateLimitedClient = new RateLimitedClient(relationClient, {
-        tpmLimit: 8000,
+        tpmLimit: this.settings.tpmLimit,
         // A single relation-extraction call's reserved cost (~1500 input for a
         // 10-node batch + 6000 reserved ≈ 7500) fits within the 8K TPM budget,
         // but only barely — the proactive limiter can fit one call per window.
@@ -136,10 +141,16 @@ export default class SemanticIRPlugin extends Plugin {
       await this.app.workspace.openLinkText(irFile.path, "", true);
 
       new Notice(
-        `Semantic IR compiled: ${ir.nodes.length} nodes, ${ir.edges.length} edges`
+        `Lattice: ${ir.nodes.length} nodes, ${ir.edges.length} edges`
       );
     } catch (err) {
-      console.error("[SemanticIR] Pipeline error:", err);
+      console.error("[Lattice] Pipeline error:", err);
+      if (err instanceof DailyTokenLimitError) {
+        new Notice(
+          "Daily token quota reached for your API provider. The run stopped cleanly — no partial output was written. Try again after your quota resets, or use an API plan with a higher daily limit."
+        );
+        return;
+      }
       const msg =
         err instanceof Error ? err.message : String(err);
       const truncated =
@@ -161,7 +172,7 @@ class SemanticIRSettingTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
 
-    containerEl.createEl("h2", { text: "Semantic IR Compiler" });
+    containerEl.createEl("h2", { text: "Lattice" });
 
     new Setting(containerEl)
       .setName("LLM Base URL")
@@ -200,6 +211,24 @@ class SemanticIRSettingTab extends PluginSettingTab {
           .onChange(async (value) => {
             this.plugin.settings.llmModel = value;
             await this.plugin.saveSettings();
+          })
+      );
+
+    new Setting(containerEl)
+      .setName("Rate limit (TPM)")
+      .setDesc(
+        "Client-side throttle: max estimated tokens per minute the plugin will send. This is NOT your provider's actual limit — raise it if your provider allows more and you want faster processing. Default 8000."
+      )
+      .addText((text) =>
+        text
+          .setPlaceholder("8000")
+          .setValue(String(this.plugin.settings.tpmLimit))
+          .onChange(async (value) => {
+            const parsed = parseInt(value, 10);
+            if (!isNaN(parsed) && parsed > 0) {
+              this.plugin.settings.tpmLimit = parsed;
+              await this.plugin.saveSettings();
+            }
           })
       );
   }
