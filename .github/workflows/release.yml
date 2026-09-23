@@ -18,8 +18,12 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies
+      - name: Install root dependencies
         run: npm ci
+
+      - name: Install plugin dependencies
+        run: npm ci
+        working-directory: obsidian-plugin
 
       - name: Build plugin
         run: npm run build
