@@ -1,79 +1,13 @@
-import { z } from "zod";
 import type { SemanticNode, SemanticEdge, SemanticIR } from "../schema.js";
-
-// Zod schemas mirroring the TypeScript interfaces in schema.ts exactly.
-
-const NodeTypeSchema = z.enum(["Claim", "Observation", "Decision", "Memory", "Value", "Emotion", "Event", "Confluence"]);
-
-const ATTRIBUTION_TYPES = ["self", "citation", "external"] as const;
-
-const AttributionSchema = z.any().optional().transform((v) => {
-  if (!v || typeof v !== "object" || typeof v.type !== "string") {
-    return { type: "self" as const, ref: null as string | null };
-  }
-  if (!(ATTRIBUTION_TYPES as readonly string[]).includes(v.type)) {
-    return { type: "self" as const, ref: null as string | null };
-  }
-  const ref = v.ref == null ? null : typeof v.ref === "string" ? v.ref : null;
-  return { type: v.type as "self" | "citation" | "external", ref };
-});
-
-const SemanticNodeSchema = z.object({
-  id: z.string(),
-  type: NodeTypeSchema,
-  subtype: z.string().optional(),
-  text_span: z.string().nullable(),
-  source_document_id: z.string(),
-  span_location: z.object({ start: z.number(), end: z.number() }),
-  attribution: AttributionSchema,
-  temporal_position: z.string().nullable(),
-  epistemic_confidence: z.number().nullable(),
-  synthetic: z.boolean(),
-  segmentation_note: z.string().optional(),
-});
-
-const EdgeRelationSchema = z.enum([
-  "supports", "contradicts", "undercuts", "elaborates", "generalizes",
-  "causes", "enables", "establishes", "extends", "overrules", "contributes_to",
-  "precedes", "revises", "depends_on",
-]);
-
-const SemanticEdgeSchema = z.object({
-  id: z.string(),
-  source_node_id: z.string(),
-  target_node_id: z.string(),
-  relation: EdgeRelationSchema,
-  extraction_confidence: z.number(),
-  evidence_span: z.string().min(1),
-  interpretation_group: z.string().optional(),
-});
-
-export const SemanticIRSchema = z.object({
-  document_id: z.string(),
-  nodes: z.array(SemanticNodeSchema),
-  edges: z.array(SemanticEdgeSchema),
-  generated_at: z.string(),
-  schema_version: z.literal("1.0"),
-});
-
-export type DirectionRule = "source-later" | "source-earlier";
-
-export const DIRECTION_RULES: Partial<Record<SemanticEdge["relation"], DirectionRule>> = {
-  // Empirically confirmed via repeated live smoke-test runs — see
-  // Docs/semantic_ir_schema_v1.md for the evidence behind each entry.
-  revises: "source-later",   // 2/3 runs backwards when left to the prompt
-  causes: "source-earlier",  // 6/6 causal edges observed backwards
-  enables: "source-earlier", // same evidence set as causes
-  // establishes/extends are NOT included — same causal family, but
-  // their directionality has not been empirically tested. Do not add
-  // them speculatively.
-};
+import { SemanticIRSchema, DIRECTION_RULES } from "../schema.js";
+import { assertIRInvariants } from "./invariants.js";
 
 export function assembleSemanticIR(
   nodes: SemanticNode[],
   precedesEdges: SemanticEdge[],
   llmEdges: SemanticEdge[],
-  documentId: string
+  documentId: string,
+  sourceText?: string
 ): SemanticIR {
   const nodeMap = new Map(nodes.map((n) => [n.id, n]));
 
@@ -127,6 +61,14 @@ export function assembleSemanticIR(
   };
 
   SemanticIRSchema.parse(ir);
+
+  // The Zod gate above catches malformed shapes; the invariant suite
+  // catches the things only the source document can settle — verbatim
+  // offsets, verbatim evidence, referential integrity, edge direction.
+  // Omit sourceText only when there is no source document to check against.
+  if (sourceText !== undefined) {
+    assertIRInvariants(ir, sourceText);
+  }
 
   return ir;
 }

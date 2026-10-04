@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import type { SemanticNode, SemanticEdge, SemanticIR } from "../schema.js";
-import { assembleSemanticIR, SemanticIRSchema } from "./assemble.js";
+import { SemanticIRSchema } from "../schema.js";
+import { assembleSemanticIR } from "./assemble.js";
 
 function makeNode(id: string, start: number, end: number): SemanticNode {
   return {
@@ -302,5 +303,116 @@ describe("SemanticIRSchema strictness", () => {
 
     const result = SemanticIRSchema.safeParse(bad);
     expect(result.success).toBe(false);
+  });
+});
+
+describe("assembleSemanticIR with sourceText", () => {
+  const SOURCE = "Alpha beta. Gamma delta. Epsilon zeta.";
+
+  function nodeAt(id: string, needle: string): SemanticNode {
+    const start = SOURCE.indexOf(needle);
+    return {
+      id,
+      type: "Claim",
+      text_span: needle,
+      source_document_id: "doc-1",
+      span_location: { start, end: start + needle.length },
+      attribution: { type: "self", ref: null },
+      temporal_position: null,
+      epistemic_confidence: null,
+      synthetic: false,
+    };
+  }
+
+  function edgeBetween(
+    id: string,
+    source: string,
+    target: string,
+    relation: SemanticEdge["relation"],
+    evidence: string
+  ): SemanticEdge {
+    return {
+      id,
+      source_node_id: source,
+      target_node_id: target,
+      relation,
+      extraction_confidence: 0.9,
+      evidence_span: evidence,
+    };
+  }
+
+  function buildParts() {
+    const nodes = [
+      nodeAt("n-0", "Alpha beta."),
+      nodeAt("n-1", "Gamma delta."),
+      nodeAt("n-2", "Epsilon zeta."),
+    ];
+    const precedes = [
+      edgeBetween("p-0-1", "n-0", "n-1", "precedes", "Alpha beta."),
+      edgeBetween("p-1-2", "n-1", "n-2", "precedes", "Gamma delta."),
+    ];
+    const llm = [
+      edgeBetween("llm-0", "n-0", "n-2", "supports", "Alpha beta. Gamma delta."),
+    ];
+    return { nodes, precedes, llm };
+  }
+
+  it("returns the IR when every invariant holds", () => {
+    const { nodes, precedes, llm } = buildParts();
+    const ir = assembleSemanticIR(nodes, precedes, llm, "doc-1", SOURCE);
+
+    expect(ir.edges).toHaveLength(3);
+  });
+
+  it("throws when a text_span does not match its own offsets", () => {
+    const { nodes, precedes, llm } = buildParts();
+    nodes[0].text_span = "Alpha beta gamma.";
+
+    expect(() =>
+      assembleSemanticIR(nodes, precedes, llm, "doc-1", SOURCE)
+    ).toThrow(/TEXT_SPAN_NOT_VERBATIM/);
+  });
+
+  it("throws when an evidence_span is not verbatim in the source", () => {
+    const { nodes, precedes, llm } = buildParts();
+    llm[0].evidence_span = "invented justification";
+
+    expect(() =>
+      assembleSemanticIR(nodes, precedes, llm, "doc-1", SOURCE)
+    ).toThrow(/EVIDENCE_NOT_VERBATIM/);
+  });
+
+  it("throws when a precedes edge is missing", () => {
+    const { nodes, precedes, llm } = buildParts();
+
+    expect(() =>
+      assembleSemanticIR(nodes, [precedes[0]], llm, "doc-1", SOURCE)
+    ).toThrow(/PRECEDES_COUNT_INVALID/);
+  });
+
+  it("throws when the nodes belong to a different document than documentId", () => {
+    const { nodes, precedes, llm } = buildParts();
+
+    expect(() =>
+      assembleSemanticIR(nodes, precedes, llm, "other-doc", SOURCE)
+    ).toThrow(/DOCUMENT_ID_MISMATCH/);
+  });
+
+  it("skips invariant checks when sourceText is omitted", () => {
+    const { nodes, precedes, llm } = buildParts();
+    llm[0].evidence_span = "invented justification";
+
+    expect(() => assembleSemanticIR(nodes, precedes, llm, "doc-1")).not.toThrow();
+  });
+
+  it("accepts a backwards causes edge once direction correction has run", () => {
+    const { nodes, precedes, llm } = buildParts();
+    llm.push(edgeBetween("c-0", "n-2", "n-0", "causes", "Alpha beta."));
+
+    const ir = assembleSemanticIR(nodes, precedes, llm, "doc-1", SOURCE);
+    const causes = ir.edges.find((e) => e.relation === "causes")!;
+
+    expect(causes.source_node_id).toBe("n-0");
+    expect(causes.target_node_id).toBe("n-2");
   });
 });

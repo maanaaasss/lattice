@@ -1,5 +1,5 @@
 import type { SemanticIR, SemanticNode } from "../schema.js";
-import { SemanticIRSchema, DIRECTION_RULES } from "./assemble.js";
+import { SemanticIRSchema, DIRECTION_RULES } from "../schema.js";
 
 export type ViolationRule =
   | "SCHEMA_INVALID"

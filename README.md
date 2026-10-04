@@ -35,7 +35,7 @@ A `.ir.json.md` file will be created in the same folder as your note, containing
 2. **Classification** — LLM classifies each chunk into a node type with optional subtype
 3. **Rule-based relations** — derives `precedes` edges from document order, detects revision candidates
 4. **LLM relation extraction** — identifies semantic relationships between nodes (supports, contradicts, causes, etc.)
-5. **Assembly** — builds the final graph with direction correction rules for causal edges and revisions
+5. **Assembly** — builds the final graph with direction correction rules for causal edges and revisions, then verifies the result against the source text before anything is written
 
 ## Network usage
 

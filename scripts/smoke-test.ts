@@ -142,7 +142,7 @@ async function main() {
 
   // ── Assemble final SemanticIR ──
   console.log("\n--- Assembling SemanticIR ---");
-  const ir = assembleSemanticIR(nodes, precedesEdges, llmEdges, "smoke-test-doc");
+  const ir = assembleSemanticIR(nodes, precedesEdges, llmEdges, "smoke-test-doc", inputText);
   console.log(`Total nodes: ${ir.nodes.length}`);
   console.log(`Total edges: ${ir.edges.length}`);
 

@@ -47,7 +47,7 @@ async function main() {
   console.log("By relation:", byRel);
 
   console.log("\n--- Assembling ---");
-  const ir = assembleSemanticIR(nodes, precedesEdges, llmEdges, "test-doc");
+  const ir = assembleSemanticIR(nodes, precedesEdges, llmEdges, "test-doc", inputText);
   console.log(`IR nodes: ${ir.nodes.length}, edges: ${ir.edges.length}`);
   console.log("SUCCESS");
 }

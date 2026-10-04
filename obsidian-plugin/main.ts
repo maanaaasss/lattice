@@ -122,7 +122,8 @@ export default class SemanticIRPlugin extends Plugin {
         nodes,
         precedesEdges,
         llmEdges,
-        documentId
+        documentId,
+        inputText
       );
 
       // Write IR as a fenced JSON note
