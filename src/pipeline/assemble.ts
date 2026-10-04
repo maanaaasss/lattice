@@ -56,9 +56,9 @@ export const SemanticIRSchema = z.object({
   schema_version: z.literal("1.0"),
 });
 
-type DirectionRule = "source-later" | "source-earlier";
+export type DirectionRule = "source-later" | "source-earlier";
 
-const DIRECTION_RULES: Partial<Record<SemanticEdge["relation"], DirectionRule>> = {
+export const DIRECTION_RULES: Partial<Record<SemanticEdge["relation"], DirectionRule>> = {
   // Empirically confirmed via repeated live smoke-test runs — see
   // Docs/semantic_ir_schema_v1.md for the evidence behind each entry.
   revises: "source-later",   // 2/3 runs backwards when left to the prompt

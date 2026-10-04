@@ -45,9 +45,13 @@ This plugin makes API calls to an external LLM service that you configure. Your 
 
 ```bash
 npm install
+npm run typecheck
 npm run build
 npm test
+npm run test:coverage
 ```
+
+`npm test` covers the deterministic pipeline (segmentation, rule-based relations, assembly, validation) plus the structural invariant suite in `src/pipeline/invariants.ts`, which is also run against every IR in `test-fixtures/`. Coverage thresholds are enforced in CI on every pull request.
 
 To run the smoke test with a real LLM:
 
