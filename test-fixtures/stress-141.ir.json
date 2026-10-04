@@ -1,0 +1,3762 @@
+{
+  "document_id": "smoke-test-doc",
+  "nodes": [
+    {
+      "id": "seg-0",
+      "type": "Memory",
+      "text_span": "I was in my first year of my diploma, and everything was new since I had spent my first year online.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 0,
+        "end": 100
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-1",
+      "type": "Event",
+      "text_span": "One day, I was going through my college group, and a notification popped up for an internship.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 101,
+        "end": 195
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-2",
+      "type": "Claim",
+      "subtype": "Opinion",
+      "text_span": "The pitch was almost funny.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 196,
+        "end": 223
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.5,
+      "synthetic": false
+    },
+    {
+      "id": "seg-3",
+      "type": "Claim",
+      "subtype": "Intent",
+      "text_span": "It was essentially a setup to sell courses to get incentives, get promoted to team leader, and then make more money based on the team's performance.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 224,
+        "end": 372
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.7,
+      "synthetic": false
+    },
+    {
+      "id": "seg-4",
+      "type": "Claim",
+      "text_span": "In short, a salesman.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 373,
+        "end": 394
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.8,
+      "synthetic": false
+    },
+    {
+      "id": "seg-5",
+      "type": "Emotion",
+      "text_span": "I laugh looking back at it, especially considering what I was reading about my kundli earlier today.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 395,
+        "end": 495
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-6",
+      "type": "Decision",
+      "text_span": "I thought, why not try it?",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 496,
+        "end": 522
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-7",
+      "type": "Observation",
+      "text_span": "I was getting bored doing nothing at home anyway.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 523,
+        "end": 572
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-8",
+      "type": "Decision",
+      "text_span": "So, I joined.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 573,
+        "end": 586
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-9",
+      "type": "Claim",
+      "subtype": "Opinion",
+      "text_span": "It was nothing fancy.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 587,
+        "end": 608
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.6,
+      "synthetic": false
+    },
+    {
+      "id": "seg-10",
+      "type": "Event",
+      "text_span": "They just called, asked if I had any experience talking to people, I said no, and they hired me.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 609,
+        "end": 705
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-11",
+      "type": "Observation",
+      "text_span": "I joined under a team leader.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 706,
+        "end": 735
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-12",
+      "type": "Memory",
+      "text_span": "I think her name was Shruti.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 736,
+        "end": 764
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-13",
+      "type": "Memory",
+      "text_span": "I was under her for a month and didn't make any sales, which was obvious.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 765,
+        "end": 838
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-14",
+      "type": "Event",
+      "text_span": "Eventually, I got transferred to a different team.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 839,
+        "end": 889
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-15",
+      "type": "Memory",
+      "text_span": "This time I had two team leaders, a girl and a guy who turned out to be a couple.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 890,
+        "end": 971
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-16",
+      "type": "Memory",
+      "text_span": "Their names were Vanshika and Shivam.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 972,
+        "end": 1009
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-17",
+      "type": "Observation",
+      "text_span": "They were pretty cool, and since everything was new to me, I was fascinated by the environment.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 1010,
+        "end": 1105
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-18",
+      "type": "Memory",
+      "text_span": "I got a little close with both of them and a few other teammates.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 1106,
+        "end": 1171
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-19",
+      "type": "Observation",
+      "text_span": "By this point, almost three months had passed, and the situation at my house was deteriorating quickly.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 1172,
+        "end": 1275
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-20",
+      "type": "Memory",
+      "text_span": "I had a lot of issues at home and used to have frequent fights with my mother and siblings.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 1276,
+        "end": 1367
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-21",
+      "type": "Event",
+      "text_span": "Then, I got introduced to a new girl named Mink.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 1368,
+        "end": 1416
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-22",
+      "type": "Claim",
+      "text_span": "She was also a team lead.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 1417,
+        "end": 1442
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.8,
+      "synthetic": false
+    },
+    {
+      "id": "seg-23",
+      "type": "Event",
+      "text_span": "We were in an informal meeting together, and I found out she was studying finance and law.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 1443,
+        "end": 1533
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.85,
+      "synthetic": false
+    },
+    {
+      "id": "seg-24",
+      "type": "Memory",
+      "text_span": "During that meet, I cracked a joke, saying that since she was a lawyer, I would prefer to stay shut because she could put me in jail.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 1534,
+        "end": 1667
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-25",
+      "type": "Memory",
+      "text_span": "After that, we didn't speak.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 1668,
+        "end": 1696
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-26",
+      "type": "Event",
+      "text_span": "A few days later, I was transferred to work under her team.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 1697,
+        "end": 1756
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.8,
+      "synthetic": false
+    },
+    {
+      "id": "seg-27",
+      "type": "Memory",
+      "text_span": "I had to text her for work, and it turned out I was blocked.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 1757,
+        "end": 1817
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-28",
+      "type": "Memory",
+      "text_span": "I tagged her in the group asking for clarity.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 1818,
+        "end": 1863
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-29",
+      "type": "Claim",
+      "text_span": "She unblocked me and said she didn't like my joke, so she had just blocked me.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 1864,
+        "end": 1942
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-30",
+      "type": "Observation",
+      "text_span": "I just thought it was funny.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 1943,
+        "end": 1971
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-31",
+      "type": "Event",
+      "text_span": "We eventually started talking about work and other things.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 1972,
+        "end": 2030
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.95,
+      "synthetic": false
+    },
+    {
+      "id": "seg-32",
+      "type": "Emotion",
+      "subtype": "Tension",
+      "text_span": "Some days later, I was feeling tense about my family situation, and she asked me what was up.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 2031,
+        "end": 2124
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-33",
+      "type": "Event",
+      "subtype": "SelfDisclosure",
+      "text_span": "I told her, and she related to it, saying she had a similarly tough situation at home.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 2125,
+        "end": 2211
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-34",
+      "type": "Event",
+      "subtype": "Connection",
+      "text_span": "That was the turning point where we actually connected.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 2212,
+        "end": 2267
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-35",
+      "type": "Event",
+      "subtype": "StruggleDiscussion",
+      "text_span": "We started talking about our struggles and how difficult things were.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 2268,
+        "end": 2337
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.95,
+      "synthetic": false
+    },
+    {
+      "id": "seg-36",
+      "type": "Event",
+      "subtype": "PhoneCheck",
+      "text_span": "One day, my sister checked my phone.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 2338,
+        "end": 2374
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.95,
+      "synthetic": false
+    },
+    {
+      "id": "seg-37",
+      "type": "Claim",
+      "subtype": "FamilyOpinion",
+      "text_span": "I don't know why, maybe because my family always hated the kind of internship I was doing since it was completely different from my domain.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 2375,
+        "end": 2514
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.7,
+      "synthetic": false
+    },
+    {
+      "id": "seg-38",
+      "type": "Observation",
+      "subtype": "Motivation",
+      "text_span": "I was really only doing it because I had made good friends there.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 2515,
+        "end": 2580
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-39",
+      "type": "Decision",
+      "subtype": "InternshipLeaving",
+      "text_span": "I decided to leave the internship.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 2581,
+        "end": 2615
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-40",
+      "type": "Event",
+      "text_span": "After almost 5 to 6 months of working and making zero sales, I walked away.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 2616,
+        "end": 2691
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-41",
+      "type": "Observation",
+      "text_span": "By that point, Mink and I were close.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 2692,
+        "end": 2729
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-42",
+      "type": "Observation",
+      "text_span": "We talked about everything.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 2730,
+        "end": 2757
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-43",
+      "type": "Observation",
+      "text_span": "She mentioned that she had also left the internship, but she had earned the company almost 1M in total revenue, which blew my mind.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 2758,
+        "end": 2889
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-44",
+      "type": "Memory",
+      "text_span": "I think this was around July.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 2890,
+        "end": 2919
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-45",
+      "type": "Observation",
+      "text_span": "We were both out of the internship and growing emotionally attached.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 2920,
+        "end": 2988
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-46",
+      "type": "Claim",
+      "subtype": "Assessment",
+      "text_span": "It is probably more accurate to say it was an emotionally dependent bond.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 2989,
+        "end": 3062
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.6,
+      "synthetic": false
+    },
+    {
+      "id": "seg-47",
+      "type": "Observation",
+      "text_span": "We both realized it was turning into something more.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 3063,
+        "end": 3115
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-48",
+      "type": "Event",
+      "text_span": "In August, we started talking the way couples do.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 3116,
+        "end": 3165
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-49",
+      "type": "Event",
+      "text_span": "We were just emotionally dependent on each other, and this kept going until December when we proposed to each other.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 3166,
+        "end": 3282
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-50",
+      "type": "Claim",
+      "text_span": "The relationship officially started in December 2021.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 3283,
+        "end": 3336
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-51",
+      "type": "Claim",
+      "text_span": "She was originally from Jharkhand but was studying in Kolkata.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 3337,
+        "end": 3399
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-52",
+      "type": "Claim",
+      "text_span": "After a few months, she decided she wanted to come to Nagpur to meet me.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 3400,
+        "end": 3472
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.8,
+      "synthetic": false
+    },
+    {
+      "id": "seg-53",
+      "type": "Emotion",
+      "text_span": "I was excited and nervous that someone was coming all the way from Kolkata just for me.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 3473,
+        "end": 3560
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-54",
+      "type": "Claim",
+      "text_span": "We planned everything out, and she booked her tickets for April 1, 2022.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 3561,
+        "end": 3633
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-55",
+      "type": "Claim",
+      "text_span": "Her flight was arriving at 10:45 PM, so I had to figure out a way to tell my parents I would be out.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 3634,
+        "end": 3734
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-56",
+      "type": "Claim",
+      "text_span": "I came up with an excuse that there were college sports going on and I needed to stay there for three days.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 3735,
+        "end": 3842
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-57",
+      "type": "Claim",
+      "text_span": "They bought it.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 3843,
+        "end": 3858
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.8,
+      "synthetic": false
+    },
+    {
+      "id": "seg-58",
+      "type": "Claim",
+      "text_span": "When her flight landed, I picked her up, and we decided to stay at the airport for a while before going to the hotel.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 3859,
+        "end": 3976
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-59",
+      "type": "Claim",
+      "text_span": "The situation was tricky.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 3977,
+        "end": 4002
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.8,
+      "synthetic": false
+    },
+    {
+      "id": "seg-60",
+      "type": "Claim",
+      "subtype": "Legal Age",
+      "text_span": "I was 17, so legally I couldn't book tickets or a room in my name, and there was no chance I could live with her in the same room.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 4003,
+        "end": 4133
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-61",
+      "type": "Memory",
+      "text_span": "I asked a friend to book a room in the same hotel and asked him to stay with me there for one night.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 4134,
+        "end": 4234
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-62",
+      "type": "Memory",
+      "text_span": "Mink and I stayed at the airport until 3:45 AM, then booked a taxi to the hotel and spent the rest of the night there.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 4235,
+        "end": 4353
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-63",
+      "type": "Memory",
+      "text_span": "Around 7 or 8 AM, she called me so we could go out for breakfast.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 4354,
+        "end": 4419
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-64",
+      "type": "Memory",
+      "text_span": "We checked out right after because we had only booked for one day.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 4420,
+        "end": 4486
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-65",
+      "type": "Decision",
+      "text_span": "Later, we decided to go watch a movie.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 4487,
+        "end": 4525
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-66",
+      "type": "Observation",
+      "text_span": "It was RRR, and we didn't watch a single minute of it because we were so exhausted from staying up all night.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 4526,
+        "end": 4635
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-67",
+      "type": "Observation",
+      "text_span": "After the movie, my friend Sujit joined us, and we went bowling.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 4636,
+        "end": 4700
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-68",
+      "type": "Observation",
+      "text_span": "It was almost evening, and her return flight was early the next morning.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 4701,
+        "end": 4773
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-69",
+      "type": "Decision",
+      "text_span": "Since we didn't have living arrangements, we bought bread and jam and decided to just stay in the metro station on the way to the airport.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 4774,
+        "end": 4912
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-70",
+      "type": "Event",
+      "text_span": "A guard asked what we were doing there so late, so we explained her early flight.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 4913,
+        "end": 4994
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-71",
+      "type": "Event",
+      "text_span": "He allowed us to stay and waited nearby just in case we needed help.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 4995,
+        "end": 5063
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-72",
+      "type": "Event",
+      "text_span": "Around 5:30 AM, we left for the airport, which was about a 1KM walk.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 5064,
+        "end": 5132
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-73",
+      "type": "Observation",
+      "text_span": "We sat there for a while, talking and realizing how emotionally attached we were.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 5133,
+        "end": 5214
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-74",
+      "type": "Event",
+      "text_span": "Then it was time for her to go inside.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 5215,
+        "end": 5253
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-75",
+      "type": "Event",
+      "text_span": "I started walking back.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 5254,
+        "end": 5277
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-76",
+      "type": "Observation",
+      "text_span": "That day, I walked almost 12KM without even realizing it.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 5278,
+        "end": 5335
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-77",
+      "type": "Emotion",
+      "text_span": "That was the first time in my life I felt that I belonged somewhere, or knew that someone in the world actually cared for me.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 5336,
+        "end": 5461
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-78",
+      "type": "Observation",
+      "text_span": "During that time, my living situation was bad, and I didn't know I had so many underlying problems.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 5462,
+        "end": 5561
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-79",
+      "type": "Event",
+      "text_span": "When I got home, my mother was furious and gave me the silent treatment again.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 5562,
+        "end": 5640
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-80",
+      "type": "Claim",
+      "subtype": "Bond",
+      "text_span": "After that trip, the bond between Mink and I deepened.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 5641,
+        "end": 5695
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.8,
+      "synthetic": false
+    },
+    {
+      "id": "seg-81",
+      "type": "Emotion",
+      "text_span": "It felt very pure.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 5696,
+        "end": 5714
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-82",
+      "type": "Event",
+      "text_span": "We kept talking and learning more about each other.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 5715,
+        "end": 5766
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-83",
+      "type": "Observation",
+      "text_span": "We became very aware of each other's patterns and mental states.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 5767,
+        "end": 5831
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-84",
+      "type": "Event",
+      "text_span": "A year later, on March 23, 2023, we planned another trip to Nagpur.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 5832,
+        "end": 5899
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.95,
+      "synthetic": false
+    },
+    {
+      "id": "seg-85",
+      "type": "Claim",
+      "subtype": "Self-Improvement",
+      "text_span": "I was smarter and more confident this time.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 5900,
+        "end": 5943
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.8,
+      "synthetic": false
+    },
+    {
+      "id": "seg-86",
+      "type": "Event",
+      "text_span": "She came by train, arriving at 3:45 AM.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 5944,
+        "end": 5983
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.95,
+      "synthetic": false
+    },
+    {
+      "id": "seg-87",
+      "type": "Event",
+      "text_span": "I had everything sorted with the help of two friends.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 5984,
+        "end": 6037
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-88",
+      "type": "Event",
+      "text_span": "We went to a much better hotel and booked just one room.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 6038,
+        "end": 6094
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-89",
+      "type": "Event",
+      "text_span": "We fell asleep immediately and woke up around 12 PM.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 6095,
+        "end": 6147
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-90",
+      "type": "Event",
+      "text_span": "We had a light brunch, went to a nearby cafe for a date in the evening, and returned to the hotel later that night.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 6148,
+        "end": 6263
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.95,
+      "synthetic": false
+    },
+    {
+      "id": "seg-91",
+      "type": "Emotion",
+      "text_span": "We talked and cried for a while because our family situations were still so awful.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 6264,
+        "end": 6346
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-92",
+      "type": "Event",
+      "text_span": "We slept it off because we had an early trip planned the next day with my friends to a river on the outskirts of Nagpur.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 6347,
+        "end": 6467
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-93",
+      "type": "Event",
+      "text_span": "We spent the entire day at the river and headed back to the hotel at night.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 6468,
+        "end": 6543
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.95,
+      "synthetic": false
+    },
+    {
+      "id": "seg-94",
+      "type": "Event",
+      "text_span": "We had a light dinner and talked about our future.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 6544,
+        "end": 6594
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-95",
+      "type": "Event",
+      "text_span": "She had an early morning flight, so we checked out the next morning and went to the airport.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 6595,
+        "end": 6687
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-96",
+      "type": "Event",
+      "text_span": "I stayed there and we said our goodbyes.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 6688,
+        "end": 6728
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-97",
+      "type": "Event",
+      "text_span": "Then, I started my long walk home.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 6729,
+        "end": 6763
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-98",
+      "type": "Emotion",
+      "text_span": "Goodbyes always feel heavy because I always fear I might not get to see the person again.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 6764,
+        "end": 6853
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-99",
+      "type": "Claim",
+      "text_span": "After that, she got a job at EY, a top finance firm.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 6854,
+        "end": 6906
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.8,
+      "synthetic": false
+    },
+    {
+      "id": "seg-100",
+      "type": "Memory",
+      "text_span": "We were happy, but then my issues started appearing.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 6907,
+        "end": 6959
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-101",
+      "type": "Memory",
+      "text_span": "My depression started growing, and I didn't even know what it was back then.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 6960,
+        "end": 7036
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-102",
+      "type": "Value",
+      "text_span": "I was skeptical about mental health issues.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 7037,
+        "end": 7080
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-103",
+      "type": "Event",
+      "text_span": "I started experiencing anxiety, depression, and a meaningless rage.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 7081,
+        "end": 7148
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.95,
+      "synthetic": false
+    },
+    {
+      "id": "seg-104",
+      "type": "Observation",
+      "text_span": "I didn't know why it was happening.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 7149,
+        "end": 7184
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-105",
+      "type": "Observation",
+      "text_span": "Mink was doing better with her mental health and career, but she still had her own issues.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 7185,
+        "end": 7275
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-106",
+      "type": "Event",
+      "text_span": "She tried her best to help me through it, but I turned on her.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 7276,
+        "end": 7338
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-107",
+      "type": "Event",
+      "text_span": "I dropped all my stress and anger onto her and started taking her for granted.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 7339,
+        "end": 7417
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-108",
+      "type": "Observation",
+      "text_span": "She kept trying to make things right.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 7418,
+        "end": 7455
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-109",
+      "type": "Memory",
+      "text_span": "Once I calmed down, I would try to work on myself, but it was difficult because I didn't understand my own suffering, and my parents were constantly blaming me for everything.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 7456,
+        "end": 7631
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-110",
+      "type": "Observation",
+      "text_span": "I should note that when we were dating, she was 20 and I was 17.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 7632,
+        "end": 7696
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-111",
+      "type": "Observation",
+      "text_span": "A few months later, I left for Sangli.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 7697,
+        "end": 7735
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-112",
+      "type": "Observation",
+      "text_span": "We were both excited that I was finally out of my house.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 7736,
+        "end": 7792
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-113",
+      "type": "Observation",
+      "text_span": "But after getting to Sangli, things took a drastic turn.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 7793,
+        "end": 7849
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-114",
+      "type": "Observation",
+      "text_span": "It got worse between us, and she just couldn't take it anymore.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 7850,
+        "end": 7913
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-115",
+      "type": "Observation",
+      "text_span": "She had tried enough, but my behavior wasn't getting any better.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 7914,
+        "end": 7978
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-116",
+      "type": "Event",
+      "text_span": "One day, she decided to break it off and leave.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 7979,
+        "end": 8026
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-117",
+      "type": "Emotion",
+      "text_span": "I was furious and in denial.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 8027,
+        "end": 8055
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-118",
+      "type": "Observation",
+      "text_span": "While my life was falling apart, she was my only source of sanity.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 8056,
+        "end": 8122
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-119",
+      "type": "Claim",
+      "text_span": "But looking back, I realize anyone would have done the same thing.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 8123,
+        "end": 8189
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.6,
+      "synthetic": false
+    },
+    {
+      "id": "seg-120",
+      "type": "Claim",
+      "subtype": "Speculation",
+      "text_span": "Another girl might have left long before she did.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 8190,
+        "end": 8239
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.5,
+      "synthetic": false
+    },
+    {
+      "id": "seg-121",
+      "type": "Claim",
+      "text_span": "Things got much worse in Sangli after that, which I have already documented in previous entries.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 8240,
+        "end": 8336
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.8,
+      "synthetic": false
+    },
+    {
+      "id": "seg-122",
+      "type": "Memory",
+      "subtype": "Belief",
+      "text_span": "I used to think my suffering was because of our separation.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 8337,
+        "end": 8396
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-123",
+      "type": "Memory",
+      "subtype": "Explanation",
+      "text_span": "That was part of it, but the real issue was the trauma I had accumulated since childhood.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 8397,
+        "end": 8486
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-124",
+      "type": "Event",
+      "text_span": "After the breakup, she blocked me on WhatsApp.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 8487,
+        "end": 8533
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-125",
+      "type": "Event",
+      "text_span": "I texted her once or twice for clarity, but it never happened.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 8534,
+        "end": 8596
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-126",
+      "type": "Event",
+      "text_span": "In mid-2024, she texted me, but I was still furious with my life and turned my anger onto her.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 8597,
+        "end": 8691
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.9,
+      "synthetic": false
+    },
+    {
+      "id": "seg-127",
+      "type": "Claim",
+      "text_span": "That was my last mistake, because we never spoke after that.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 8692,
+        "end": 8752
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.7,
+      "synthetic": false
+    },
+    {
+      "id": "seg-128",
+      "type": "Memory",
+      "subtype": "Clarity",
+      "text_span": "Months later, I finally gained clarity on a lot of things, especially this relationship.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 8753,
+        "end": 8841
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-129",
+      "type": "Decision",
+      "subtype": "Intent",
+      "text_span": "I wanted to reach out and talk to her like a real person, like the friend I met in that internship, and tell her she was right.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 8842,
+        "end": 8969
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-130",
+      "type": "Claim",
+      "text_span": "There was no way for her to end things smoothly because I wouldn't have let it happen.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 8970,
+        "end": 9056
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.3,
+      "synthetic": false
+    },
+    {
+      "id": "seg-131",
+      "type": "Claim",
+      "text_span": "She had no choice but to leave abruptly.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 9057,
+        "end": 9097
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.4,
+      "synthetic": false
+    },
+    {
+      "id": "seg-132",
+      "type": "Memory",
+      "text_span": "I never got the chance to see her in Bangalore.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 9098,
+        "end": 9145
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-133",
+      "type": "Observation",
+      "text_span": "A year ago, I saw her LinkedIn profile and noticed she was living there.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 9146,
+        "end": 9218
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-134",
+      "type": "Emotion",
+      "text_span": "I don't have any harsh feelings toward her anymore.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 9219,
+        "end": 9270
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-135",
+      "type": "Claim",
+      "text_span": "What happened, had to happen.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 9271,
+        "end": 9300
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.5,
+      "synthetic": false
+    },
+    {
+      "id": "seg-136",
+      "type": "Emotion",
+      "text_span": "I just feel sometimes that I should talk to her before anything bad happens to me, because she deserves to know.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 9301,
+        "end": 9413
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-137",
+      "type": "Memory",
+      "text_span": "In my other journal entries, I noted that Mink, Purti, and Samruddhi had a huge impact on my life.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 9414,
+        "end": 9512
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    },
+    {
+      "id": "seg-138",
+      "type": "Claim",
+      "text_span": "I am still figuring out the last two, but Mink's impact was significant.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 9513,
+        "end": 9585
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.6,
+      "synthetic": false
+    },
+    {
+      "id": "seg-139",
+      "type": "Claim",
+      "text_span": "She taught me a lot without even knowing it, and I respect her deeply.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 9586,
+        "end": 9656
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": 0.7,
+      "synthetic": false
+    },
+    {
+      "id": "seg-140",
+      "type": "Emotion",
+      "text_span": "I am glad it all happened.",
+      "source_document_id": "smoke-test-doc",
+      "span_location": {
+        "start": 9657,
+        "end": 9683
+      },
+      "attribution": {
+        "type": "self",
+        "ref": null
+      },
+      "temporal_position": null,
+      "epistemic_confidence": null,
+      "synthetic": false
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-precedes-seg-0-seg-1",
+      "source_node_id": "seg-0",
+      "target_node_id": "seg-1",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I was in my first year of my diploma, and everything was new since I had spent my first year online."
+    },
+    {
+      "id": "edge-precedes-seg-1-seg-2",
+      "source_node_id": "seg-1",
+      "target_node_id": "seg-2",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "One day, I was going through my college group, and a notification popped up for an internship."
+    },
+    {
+      "id": "edge-precedes-seg-2-seg-3",
+      "source_node_id": "seg-2",
+      "target_node_id": "seg-3",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "The pitch was almost funny."
+    },
+    {
+      "id": "edge-precedes-seg-3-seg-4",
+      "source_node_id": "seg-3",
+      "target_node_id": "seg-4",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "It was essentially a setup to sell courses to get incentives, get promoted to team leader, and then make more money based on the team's performance."
+    },
+    {
+      "id": "edge-precedes-seg-4-seg-5",
+      "source_node_id": "seg-4",
+      "target_node_id": "seg-5",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "In short, a salesman."
+    },
+    {
+      "id": "edge-precedes-seg-5-seg-6",
+      "source_node_id": "seg-5",
+      "target_node_id": "seg-6",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I laugh looking back at it, especially considering what I was reading about my kundli earlier today."
+    },
+    {
+      "id": "edge-precedes-seg-6-seg-7",
+      "source_node_id": "seg-6",
+      "target_node_id": "seg-7",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I thought, why not try it?"
+    },
+    {
+      "id": "edge-precedes-seg-7-seg-8",
+      "source_node_id": "seg-7",
+      "target_node_id": "seg-8",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I was getting bored doing nothing at home anyway."
+    },
+    {
+      "id": "edge-precedes-seg-8-seg-9",
+      "source_node_id": "seg-8",
+      "target_node_id": "seg-9",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "So, I joined."
+    },
+    {
+      "id": "edge-precedes-seg-9-seg-10",
+      "source_node_id": "seg-9",
+      "target_node_id": "seg-10",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "It was nothing fancy."
+    },
+    {
+      "id": "edge-precedes-seg-10-seg-11",
+      "source_node_id": "seg-10",
+      "target_node_id": "seg-11",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "They just called, asked if I had any experience talking to people, I said no, and they hired me."
+    },
+    {
+      "id": "edge-precedes-seg-11-seg-12",
+      "source_node_id": "seg-11",
+      "target_node_id": "seg-12",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I joined under a team leader."
+    },
+    {
+      "id": "edge-precedes-seg-12-seg-13",
+      "source_node_id": "seg-12",
+      "target_node_id": "seg-13",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I think her name was Shruti."
+    },
+    {
+      "id": "edge-precedes-seg-13-seg-14",
+      "source_node_id": "seg-13",
+      "target_node_id": "seg-14",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I was under her for a month and didn't make any sales, which was obvious."
+    },
+    {
+      "id": "edge-precedes-seg-14-seg-15",
+      "source_node_id": "seg-14",
+      "target_node_id": "seg-15",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "Eventually, I got transferred to a different team."
+    },
+    {
+      "id": "edge-precedes-seg-15-seg-16",
+      "source_node_id": "seg-15",
+      "target_node_id": "seg-16",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "This time I had two team leaders, a girl and a guy who turned out to be a couple."
+    },
+    {
+      "id": "edge-precedes-seg-16-seg-17",
+      "source_node_id": "seg-16",
+      "target_node_id": "seg-17",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "Their names were Vanshika and Shivam."
+    },
+    {
+      "id": "edge-precedes-seg-17-seg-18",
+      "source_node_id": "seg-17",
+      "target_node_id": "seg-18",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "They were pretty cool, and since everything was new to me, I was fascinated by the environment."
+    },
+    {
+      "id": "edge-precedes-seg-18-seg-19",
+      "source_node_id": "seg-18",
+      "target_node_id": "seg-19",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I got a little close with both of them and a few other teammates."
+    },
+    {
+      "id": "edge-precedes-seg-19-seg-20",
+      "source_node_id": "seg-19",
+      "target_node_id": "seg-20",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "By this point, almost three months had passed, and the situation at my house was deteriorating quickly."
+    },
+    {
+      "id": "edge-precedes-seg-20-seg-21",
+      "source_node_id": "seg-20",
+      "target_node_id": "seg-21",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I had a lot of issues at home and used to have frequent fights with my mother and siblings."
+    },
+    {
+      "id": "edge-precedes-seg-21-seg-22",
+      "source_node_id": "seg-21",
+      "target_node_id": "seg-22",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "Then, I got introduced to a new girl named Mink."
+    },
+    {
+      "id": "edge-precedes-seg-22-seg-23",
+      "source_node_id": "seg-22",
+      "target_node_id": "seg-23",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "She was also a team lead."
+    },
+    {
+      "id": "edge-precedes-seg-23-seg-24",
+      "source_node_id": "seg-23",
+      "target_node_id": "seg-24",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "We were in an informal meeting together, and I found out she was studying finance and law."
+    },
+    {
+      "id": "edge-precedes-seg-24-seg-25",
+      "source_node_id": "seg-24",
+      "target_node_id": "seg-25",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "During that meet, I cracked a joke, saying that since she was a lawyer, I would prefer to stay shut because she could put me in jail."
+    },
+    {
+      "id": "edge-precedes-seg-25-seg-26",
+      "source_node_id": "seg-25",
+      "target_node_id": "seg-26",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "After that, we didn't speak."
+    },
+    {
+      "id": "edge-precedes-seg-26-seg-27",
+      "source_node_id": "seg-26",
+      "target_node_id": "seg-27",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "A few days later, I was transferred to work under her team."
+    },
+    {
+      "id": "edge-precedes-seg-27-seg-28",
+      "source_node_id": "seg-27",
+      "target_node_id": "seg-28",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I had to text her for work, and it turned out I was blocked."
+    },
+    {
+      "id": "edge-precedes-seg-28-seg-29",
+      "source_node_id": "seg-28",
+      "target_node_id": "seg-29",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I tagged her in the group asking for clarity."
+    },
+    {
+      "id": "edge-precedes-seg-29-seg-30",
+      "source_node_id": "seg-29",
+      "target_node_id": "seg-30",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "She unblocked me and said she didn't like my joke, so she had just blocked me."
+    },
+    {
+      "id": "edge-precedes-seg-30-seg-31",
+      "source_node_id": "seg-30",
+      "target_node_id": "seg-31",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I just thought it was funny."
+    },
+    {
+      "id": "edge-precedes-seg-31-seg-32",
+      "source_node_id": "seg-31",
+      "target_node_id": "seg-32",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "We eventually started talking about work and other things."
+    },
+    {
+      "id": "edge-precedes-seg-32-seg-33",
+      "source_node_id": "seg-32",
+      "target_node_id": "seg-33",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "Some days later, I was feeling tense about my family situation, and she asked me what was up."
+    },
+    {
+      "id": "edge-precedes-seg-33-seg-34",
+      "source_node_id": "seg-33",
+      "target_node_id": "seg-34",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I told her, and she related to it, saying she had a similarly tough situation at home."
+    },
+    {
+      "id": "edge-precedes-seg-34-seg-35",
+      "source_node_id": "seg-34",
+      "target_node_id": "seg-35",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "That was the turning point where we actually connected."
+    },
+    {
+      "id": "edge-precedes-seg-35-seg-36",
+      "source_node_id": "seg-35",
+      "target_node_id": "seg-36",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "We started talking about our struggles and how difficult things were."
+    },
+    {
+      "id": "edge-precedes-seg-36-seg-37",
+      "source_node_id": "seg-36",
+      "target_node_id": "seg-37",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "One day, my sister checked my phone."
+    },
+    {
+      "id": "edge-precedes-seg-37-seg-38",
+      "source_node_id": "seg-37",
+      "target_node_id": "seg-38",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I don't know why, maybe because my family always hated the kind of internship I was doing since it was completely different from my domain."
+    },
+    {
+      "id": "edge-precedes-seg-38-seg-39",
+      "source_node_id": "seg-38",
+      "target_node_id": "seg-39",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I was really only doing it because I had made good friends there."
+    },
+    {
+      "id": "edge-precedes-seg-39-seg-40",
+      "source_node_id": "seg-39",
+      "target_node_id": "seg-40",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I decided to leave the internship."
+    },
+    {
+      "id": "edge-precedes-seg-40-seg-41",
+      "source_node_id": "seg-40",
+      "target_node_id": "seg-41",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "After almost 5 to 6 months of working and making zero sales, I walked away."
+    },
+    {
+      "id": "edge-precedes-seg-41-seg-42",
+      "source_node_id": "seg-41",
+      "target_node_id": "seg-42",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "By that point, Mink and I were close."
+    },
+    {
+      "id": "edge-precedes-seg-42-seg-43",
+      "source_node_id": "seg-42",
+      "target_node_id": "seg-43",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "We talked about everything."
+    },
+    {
+      "id": "edge-precedes-seg-43-seg-44",
+      "source_node_id": "seg-43",
+      "target_node_id": "seg-44",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "She mentioned that she had also left the internship, but she had earned the company almost 1M in total revenue, which blew my mind."
+    },
+    {
+      "id": "edge-precedes-seg-44-seg-45",
+      "source_node_id": "seg-44",
+      "target_node_id": "seg-45",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I think this was around July."
+    },
+    {
+      "id": "edge-precedes-seg-45-seg-46",
+      "source_node_id": "seg-45",
+      "target_node_id": "seg-46",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "We were both out of the internship and growing emotionally attached."
+    },
+    {
+      "id": "edge-precedes-seg-46-seg-47",
+      "source_node_id": "seg-46",
+      "target_node_id": "seg-47",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "It is probably more accurate to say it was an emotionally dependent bond."
+    },
+    {
+      "id": "edge-precedes-seg-47-seg-48",
+      "source_node_id": "seg-47",
+      "target_node_id": "seg-48",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "We both realized it was turning into something more."
+    },
+    {
+      "id": "edge-precedes-seg-48-seg-49",
+      "source_node_id": "seg-48",
+      "target_node_id": "seg-49",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "In August, we started talking the way couples do."
+    },
+    {
+      "id": "edge-precedes-seg-49-seg-50",
+      "source_node_id": "seg-49",
+      "target_node_id": "seg-50",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "We were just emotionally dependent on each other, and this kept going until December when we proposed to each other."
+    },
+    {
+      "id": "edge-precedes-seg-50-seg-51",
+      "source_node_id": "seg-50",
+      "target_node_id": "seg-51",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "The relationship officially started in December 2021."
+    },
+    {
+      "id": "edge-precedes-seg-51-seg-52",
+      "source_node_id": "seg-51",
+      "target_node_id": "seg-52",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "She was originally from Jharkhand but was studying in Kolkata."
+    },
+    {
+      "id": "edge-precedes-seg-52-seg-53",
+      "source_node_id": "seg-52",
+      "target_node_id": "seg-53",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "After a few months, she decided she wanted to come to Nagpur to meet me."
+    },
+    {
+      "id": "edge-precedes-seg-53-seg-54",
+      "source_node_id": "seg-53",
+      "target_node_id": "seg-54",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I was excited and nervous that someone was coming all the way from Kolkata just for me."
+    },
+    {
+      "id": "edge-precedes-seg-54-seg-55",
+      "source_node_id": "seg-54",
+      "target_node_id": "seg-55",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "We planned everything out, and she booked her tickets for April 1, 2022."
+    },
+    {
+      "id": "edge-precedes-seg-55-seg-56",
+      "source_node_id": "seg-55",
+      "target_node_id": "seg-56",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "Her flight was arriving at 10:45 PM, so I had to figure out a way to tell my parents I would be out."
+    },
+    {
+      "id": "edge-precedes-seg-56-seg-57",
+      "source_node_id": "seg-56",
+      "target_node_id": "seg-57",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I came up with an excuse that there were college sports going on and I needed to stay there for three days."
+    },
+    {
+      "id": "edge-precedes-seg-57-seg-58",
+      "source_node_id": "seg-57",
+      "target_node_id": "seg-58",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "They bought it."
+    },
+    {
+      "id": "edge-precedes-seg-58-seg-59",
+      "source_node_id": "seg-58",
+      "target_node_id": "seg-59",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "When her flight landed, I picked her up, and we decided to stay at the airport for a while before going to the hotel."
+    },
+    {
+      "id": "edge-precedes-seg-59-seg-60",
+      "source_node_id": "seg-59",
+      "target_node_id": "seg-60",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "The situation was tricky."
+    },
+    {
+      "id": "edge-precedes-seg-60-seg-61",
+      "source_node_id": "seg-60",
+      "target_node_id": "seg-61",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I was 17, so legally I couldn't book tickets or a room in my name, and there was no chance I could live with her in the same room."
+    },
+    {
+      "id": "edge-precedes-seg-61-seg-62",
+      "source_node_id": "seg-61",
+      "target_node_id": "seg-62",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I asked a friend to book a room in the same hotel and asked him to stay with me there for one night."
+    },
+    {
+      "id": "edge-precedes-seg-62-seg-63",
+      "source_node_id": "seg-62",
+      "target_node_id": "seg-63",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "Mink and I stayed at the airport until 3:45 AM, then booked a taxi to the hotel and spent the rest of the night there."
+    },
+    {
+      "id": "edge-precedes-seg-63-seg-64",
+      "source_node_id": "seg-63",
+      "target_node_id": "seg-64",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "Around 7 or 8 AM, she called me so we could go out for breakfast."
+    },
+    {
+      "id": "edge-precedes-seg-64-seg-65",
+      "source_node_id": "seg-64",
+      "target_node_id": "seg-65",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "We checked out right after because we had only booked for one day."
+    },
+    {
+      "id": "edge-precedes-seg-65-seg-66",
+      "source_node_id": "seg-65",
+      "target_node_id": "seg-66",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "Later, we decided to go watch a movie."
+    },
+    {
+      "id": "edge-precedes-seg-66-seg-67",
+      "source_node_id": "seg-66",
+      "target_node_id": "seg-67",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "It was RRR, and we didn't watch a single minute of it because we were so exhausted from staying up all night."
+    },
+    {
+      "id": "edge-precedes-seg-67-seg-68",
+      "source_node_id": "seg-67",
+      "target_node_id": "seg-68",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "After the movie, my friend Sujit joined us, and we went bowling."
+    },
+    {
+      "id": "edge-precedes-seg-68-seg-69",
+      "source_node_id": "seg-68",
+      "target_node_id": "seg-69",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "It was almost evening, and her return flight was early the next morning."
+    },
+    {
+      "id": "edge-precedes-seg-69-seg-70",
+      "source_node_id": "seg-69",
+      "target_node_id": "seg-70",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "Since we didn't have living arrangements, we bought bread and jam and decided to just stay in the metro station on the way to the airport."
+    },
+    {
+      "id": "edge-precedes-seg-70-seg-71",
+      "source_node_id": "seg-70",
+      "target_node_id": "seg-71",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "A guard asked what we were doing there so late, so we explained her early flight."
+    },
+    {
+      "id": "edge-precedes-seg-71-seg-72",
+      "source_node_id": "seg-71",
+      "target_node_id": "seg-72",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "He allowed us to stay and waited nearby just in case we needed help."
+    },
+    {
+      "id": "edge-precedes-seg-72-seg-73",
+      "source_node_id": "seg-72",
+      "target_node_id": "seg-73",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "Around 5:30 AM, we left for the airport, which was about a 1KM walk."
+    },
+    {
+      "id": "edge-precedes-seg-73-seg-74",
+      "source_node_id": "seg-73",
+      "target_node_id": "seg-74",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "We sat there for a while, talking and realizing how emotionally attached we were."
+    },
+    {
+      "id": "edge-precedes-seg-74-seg-75",
+      "source_node_id": "seg-74",
+      "target_node_id": "seg-75",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "Then it was time for her to go inside."
+    },
+    {
+      "id": "edge-precedes-seg-75-seg-76",
+      "source_node_id": "seg-75",
+      "target_node_id": "seg-76",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I started walking back."
+    },
+    {
+      "id": "edge-precedes-seg-76-seg-77",
+      "source_node_id": "seg-76",
+      "target_node_id": "seg-77",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "That day, I walked almost 12KM without even realizing it."
+    },
+    {
+      "id": "edge-precedes-seg-77-seg-78",
+      "source_node_id": "seg-77",
+      "target_node_id": "seg-78",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "That was the first time in my life I felt that I belonged somewhere, or knew that someone in the world actually cared for me."
+    },
+    {
+      "id": "edge-precedes-seg-78-seg-79",
+      "source_node_id": "seg-78",
+      "target_node_id": "seg-79",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "During that time, my living situation was bad, and I didn't know I had so many underlying problems."
+    },
+    {
+      "id": "edge-precedes-seg-79-seg-80",
+      "source_node_id": "seg-79",
+      "target_node_id": "seg-80",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "When I got home, my mother was furious and gave me the silent treatment again."
+    },
+    {
+      "id": "edge-precedes-seg-80-seg-81",
+      "source_node_id": "seg-80",
+      "target_node_id": "seg-81",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "After that trip, the bond between Mink and I deepened."
+    },
+    {
+      "id": "edge-precedes-seg-81-seg-82",
+      "source_node_id": "seg-81",
+      "target_node_id": "seg-82",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "It felt very pure."
+    },
+    {
+      "id": "edge-precedes-seg-82-seg-83",
+      "source_node_id": "seg-82",
+      "target_node_id": "seg-83",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "We kept talking and learning more about each other."
+    },
+    {
+      "id": "edge-precedes-seg-83-seg-84",
+      "source_node_id": "seg-83",
+      "target_node_id": "seg-84",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "We became very aware of each other's patterns and mental states."
+    },
+    {
+      "id": "edge-precedes-seg-84-seg-85",
+      "source_node_id": "seg-84",
+      "target_node_id": "seg-85",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "A year later, on March 23, 2023, we planned another trip to Nagpur."
+    },
+    {
+      "id": "edge-precedes-seg-85-seg-86",
+      "source_node_id": "seg-85",
+      "target_node_id": "seg-86",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I was smarter and more confident this time."
+    },
+    {
+      "id": "edge-precedes-seg-86-seg-87",
+      "source_node_id": "seg-86",
+      "target_node_id": "seg-87",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "She came by train, arriving at 3:45 AM."
+    },
+    {
+      "id": "edge-precedes-seg-87-seg-88",
+      "source_node_id": "seg-87",
+      "target_node_id": "seg-88",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I had everything sorted with the help of two friends."
+    },
+    {
+      "id": "edge-precedes-seg-88-seg-89",
+      "source_node_id": "seg-88",
+      "target_node_id": "seg-89",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "We went to a much better hotel and booked just one room."
+    },
+    {
+      "id": "edge-precedes-seg-89-seg-90",
+      "source_node_id": "seg-89",
+      "target_node_id": "seg-90",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "We fell asleep immediately and woke up around 12 PM."
+    },
+    {
+      "id": "edge-precedes-seg-90-seg-91",
+      "source_node_id": "seg-90",
+      "target_node_id": "seg-91",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "We had a light brunch, went to a nearby cafe for a date in the evening, and returned to the hotel later that night."
+    },
+    {
+      "id": "edge-precedes-seg-91-seg-92",
+      "source_node_id": "seg-91",
+      "target_node_id": "seg-92",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "We talked and cried for a while because our family situations were still so awful."
+    },
+    {
+      "id": "edge-precedes-seg-92-seg-93",
+      "source_node_id": "seg-92",
+      "target_node_id": "seg-93",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "We slept it off because we had an early trip planned the next day with my friends to a river on the outskirts of Nagpur."
+    },
+    {
+      "id": "edge-precedes-seg-93-seg-94",
+      "source_node_id": "seg-93",
+      "target_node_id": "seg-94",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "We spent the entire day at the river and headed back to the hotel at night."
+    },
+    {
+      "id": "edge-precedes-seg-94-seg-95",
+      "source_node_id": "seg-94",
+      "target_node_id": "seg-95",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "We had a light dinner and talked about our future."
+    },
+    {
+      "id": "edge-precedes-seg-95-seg-96",
+      "source_node_id": "seg-95",
+      "target_node_id": "seg-96",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "She had an early morning flight, so we checked out the next morning and went to the airport."
+    },
+    {
+      "id": "edge-precedes-seg-96-seg-97",
+      "source_node_id": "seg-96",
+      "target_node_id": "seg-97",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I stayed there and we said our goodbyes."
+    },
+    {
+      "id": "edge-precedes-seg-97-seg-98",
+      "source_node_id": "seg-97",
+      "target_node_id": "seg-98",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "Then, I started my long walk home."
+    },
+    {
+      "id": "edge-precedes-seg-98-seg-99",
+      "source_node_id": "seg-98",
+      "target_node_id": "seg-99",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "Goodbyes always feel heavy because I always fear I might not get to see the person again."
+    },
+    {
+      "id": "edge-precedes-seg-99-seg-100",
+      "source_node_id": "seg-99",
+      "target_node_id": "seg-100",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "After that, she got a job at EY, a top finance firm."
+    },
+    {
+      "id": "edge-precedes-seg-100-seg-101",
+      "source_node_id": "seg-100",
+      "target_node_id": "seg-101",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "We were happy, but then my issues started appearing."
+    },
+    {
+      "id": "edge-precedes-seg-101-seg-102",
+      "source_node_id": "seg-101",
+      "target_node_id": "seg-102",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "My depression started growing, and I didn't even know what it was back then."
+    },
+    {
+      "id": "edge-precedes-seg-102-seg-103",
+      "source_node_id": "seg-102",
+      "target_node_id": "seg-103",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I was skeptical about mental health issues."
+    },
+    {
+      "id": "edge-precedes-seg-103-seg-104",
+      "source_node_id": "seg-103",
+      "target_node_id": "seg-104",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I started experiencing anxiety, depression, and a meaningless rage."
+    },
+    {
+      "id": "edge-precedes-seg-104-seg-105",
+      "source_node_id": "seg-104",
+      "target_node_id": "seg-105",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I didn't know why it was happening."
+    },
+    {
+      "id": "edge-precedes-seg-105-seg-106",
+      "source_node_id": "seg-105",
+      "target_node_id": "seg-106",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "Mink was doing better with her mental health and career, but she still had her own issues."
+    },
+    {
+      "id": "edge-precedes-seg-106-seg-107",
+      "source_node_id": "seg-106",
+      "target_node_id": "seg-107",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "She tried her best to help me through it, but I turned on her."
+    },
+    {
+      "id": "edge-precedes-seg-107-seg-108",
+      "source_node_id": "seg-107",
+      "target_node_id": "seg-108",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I dropped all my stress and anger onto her and started taking her for granted."
+    },
+    {
+      "id": "edge-precedes-seg-108-seg-109",
+      "source_node_id": "seg-108",
+      "target_node_id": "seg-109",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "She kept trying to make things right."
+    },
+    {
+      "id": "edge-precedes-seg-109-seg-110",
+      "source_node_id": "seg-109",
+      "target_node_id": "seg-110",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "Once I calmed down, I would try to work on myself, but it was difficult because I didn't understand my own suffering, and my parents were constantly blaming me for everything."
+    },
+    {
+      "id": "edge-precedes-seg-110-seg-111",
+      "source_node_id": "seg-110",
+      "target_node_id": "seg-111",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I should note that when we were dating, she was 20 and I was 17."
+    },
+    {
+      "id": "edge-precedes-seg-111-seg-112",
+      "source_node_id": "seg-111",
+      "target_node_id": "seg-112",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "A few months later, I left for Sangli."
+    },
+    {
+      "id": "edge-precedes-seg-112-seg-113",
+      "source_node_id": "seg-112",
+      "target_node_id": "seg-113",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "We were both excited that I was finally out of my house."
+    },
+    {
+      "id": "edge-precedes-seg-113-seg-114",
+      "source_node_id": "seg-113",
+      "target_node_id": "seg-114",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "But after getting to Sangli, things took a drastic turn."
+    },
+    {
+      "id": "edge-precedes-seg-114-seg-115",
+      "source_node_id": "seg-114",
+      "target_node_id": "seg-115",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "It got worse between us, and she just couldn't take it anymore."
+    },
+    {
+      "id": "edge-precedes-seg-115-seg-116",
+      "source_node_id": "seg-115",
+      "target_node_id": "seg-116",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "She had tried enough, but my behavior wasn't getting any better."
+    },
+    {
+      "id": "edge-precedes-seg-116-seg-117",
+      "source_node_id": "seg-116",
+      "target_node_id": "seg-117",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "One day, she decided to break it off and leave."
+    },
+    {
+      "id": "edge-precedes-seg-117-seg-118",
+      "source_node_id": "seg-117",
+      "target_node_id": "seg-118",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I was furious and in denial."
+    },
+    {
+      "id": "edge-precedes-seg-118-seg-119",
+      "source_node_id": "seg-118",
+      "target_node_id": "seg-119",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "While my life was falling apart, she was my only source of sanity."
+    },
+    {
+      "id": "edge-precedes-seg-119-seg-120",
+      "source_node_id": "seg-119",
+      "target_node_id": "seg-120",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "But looking back, I realize anyone would have done the same thing."
+    },
+    {
+      "id": "edge-precedes-seg-120-seg-121",
+      "source_node_id": "seg-120",
+      "target_node_id": "seg-121",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "Another girl might have left long before she did."
+    },
+    {
+      "id": "edge-precedes-seg-121-seg-122",
+      "source_node_id": "seg-121",
+      "target_node_id": "seg-122",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "Things got much worse in Sangli after that, which I have already documented in previous entries."
+    },
+    {
+      "id": "edge-precedes-seg-122-seg-123",
+      "source_node_id": "seg-122",
+      "target_node_id": "seg-123",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I used to think my suffering was because of our separation."
+    },
+    {
+      "id": "edge-precedes-seg-123-seg-124",
+      "source_node_id": "seg-123",
+      "target_node_id": "seg-124",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "That was part of it, but the real issue was the trauma I had accumulated since childhood."
+    },
+    {
+      "id": "edge-precedes-seg-124-seg-125",
+      "source_node_id": "seg-124",
+      "target_node_id": "seg-125",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "After the breakup, she blocked me on WhatsApp."
+    },
+    {
+      "id": "edge-precedes-seg-125-seg-126",
+      "source_node_id": "seg-125",
+      "target_node_id": "seg-126",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I texted her once or twice for clarity, but it never happened."
+    },
+    {
+      "id": "edge-precedes-seg-126-seg-127",
+      "source_node_id": "seg-126",
+      "target_node_id": "seg-127",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "In mid-2024, she texted me, but I was still furious with my life and turned my anger onto her."
+    },
+    {
+      "id": "edge-precedes-seg-127-seg-128",
+      "source_node_id": "seg-127",
+      "target_node_id": "seg-128",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "That was my last mistake, because we never spoke after that."
+    },
+    {
+      "id": "edge-precedes-seg-128-seg-129",
+      "source_node_id": "seg-128",
+      "target_node_id": "seg-129",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "Months later, I finally gained clarity on a lot of things, especially this relationship."
+    },
+    {
+      "id": "edge-precedes-seg-129-seg-130",
+      "source_node_id": "seg-129",
+      "target_node_id": "seg-130",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I wanted to reach out and talk to her like a real person, like the friend I met in that internship, and tell her she was right."
+    },
+    {
+      "id": "edge-precedes-seg-130-seg-131",
+      "source_node_id": "seg-130",
+      "target_node_id": "seg-131",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "There was no way for her to end things smoothly because I wouldn't have let it happen."
+    },
+    {
+      "id": "edge-precedes-seg-131-seg-132",
+      "source_node_id": "seg-131",
+      "target_node_id": "seg-132",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "She had no choice but to leave abruptly."
+    },
+    {
+      "id": "edge-precedes-seg-132-seg-133",
+      "source_node_id": "seg-132",
+      "target_node_id": "seg-133",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I never got the chance to see her in Bangalore."
+    },
+    {
+      "id": "edge-precedes-seg-133-seg-134",
+      "source_node_id": "seg-133",
+      "target_node_id": "seg-134",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "A year ago, I saw her LinkedIn profile and noticed she was living there."
+    },
+    {
+      "id": "edge-precedes-seg-134-seg-135",
+      "source_node_id": "seg-134",
+      "target_node_id": "seg-135",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I don't have any harsh feelings toward her anymore."
+    },
+    {
+      "id": "edge-precedes-seg-135-seg-136",
+      "source_node_id": "seg-135",
+      "target_node_id": "seg-136",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "What happened, had to happen."
+    },
+    {
+      "id": "edge-precedes-seg-136-seg-137",
+      "source_node_id": "seg-136",
+      "target_node_id": "seg-137",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I just feel sometimes that I should talk to her before anything bad happens to me, because she deserves to know."
+    },
+    {
+      "id": "edge-precedes-seg-137-seg-138",
+      "source_node_id": "seg-137",
+      "target_node_id": "seg-138",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "In my other journal entries, I noted that Mink, Purti, and Samruddhi had a huge impact on my life."
+    },
+    {
+      "id": "edge-precedes-seg-138-seg-139",
+      "source_node_id": "seg-138",
+      "target_node_id": "seg-139",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "I am still figuring out the last two, but Mink's impact was significant."
+    },
+    {
+      "id": "edge-precedes-seg-139-seg-140",
+      "source_node_id": "seg-139",
+      "target_node_id": "seg-140",
+      "relation": "precedes",
+      "extraction_confidence": 1,
+      "evidence_span": "She taught me a lot without even knowing it, and I respect her deeply."
+    },
+    {
+      "id": "edge-llm-0",
+      "source_node_id": "seg-3",
+      "target_node_id": "seg-2",
+      "relation": "elaborates",
+      "extraction_confidence": 0.9,
+      "evidence_span": "It was essentially a setup to sell courses to get incentives, get promoted to team leader, and then make more money based on the team's performance."
+    },
+    {
+      "id": "edge-llm-1",
+      "source_node_id": "seg-4",
+      "target_node_id": "seg-3",
+      "relation": "elaborates",
+      "extraction_confidence": 0.9,
+      "evidence_span": "In short, a salesman."
+    },
+    {
+      "id": "edge-llm-2",
+      "source_node_id": "seg-9",
+      "target_node_id": "seg-8",
+      "relation": "elaborates",
+      "extraction_confidence": 0.8,
+      "evidence_span": "It was nothing fancy."
+    },
+    {
+      "id": "edge-llm-3",
+      "source_node_id": "seg-26",
+      "target_node_id": "seg-22",
+      "relation": "supports",
+      "extraction_confidence": 0.8,
+      "evidence_span": "A few days later, I was transferred to work under her team."
+    },
+    {
+      "id": "edge-llm-4",
+      "source_node_id": "seg-35",
+      "target_node_id": "seg-34",
+      "relation": "elaborates",
+      "extraction_confidence": 0.8,
+      "evidence_span": "We started talking about our struggles and how difficult things were."
+    },
+    {
+      "id": "edge-llm-5",
+      "source_node_id": "seg-49",
+      "target_node_id": "seg-45",
+      "relation": "elaborates",
+      "extraction_confidence": 0.7,
+      "evidence_span": "We were just emotionally dependent on each other, and this kept going until December when we proposed to each other."
+    },
+    {
+      "id": "edge-llm-6",
+      "source_node_id": "seg-55",
+      "target_node_id": "seg-56",
+      "relation": "causes",
+      "extraction_confidence": 0.9,
+      "evidence_span": "Her flight was arriving at 10:45 PM, so I had to figure out a way to tell my parents I would be out."
+    },
+    {
+      "id": "edge-llm-7",
+      "source_node_id": "seg-60",
+      "target_node_id": "seg-61",
+      "relation": "causes",
+      "extraction_confidence": 0.9,
+      "evidence_span": "I was 17, so legally I couldn't book tickets or a room in my name, and there was no chance I could live with her in the same room."
+    },
+    {
+      "id": "edge-llm-8",
+      "source_node_id": "seg-60",
+      "target_node_id": "seg-69",
+      "relation": "causes",
+      "extraction_confidence": 0.9,
+      "evidence_span": "I was 17, so legally I couldn't book tickets or a room in my name, and there was no chance I could live with her in the same room."
+    },
+    {
+      "id": "edge-llm-9",
+      "source_node_id": "seg-73",
+      "target_node_id": "seg-77",
+      "relation": "elaborates",
+      "extraction_confidence": 0.8,
+      "evidence_span": "We sat there for a while, talking and realizing how emotionally attached we were."
+    },
+    {
+      "id": "edge-llm-10",
+      "source_node_id": "seg-76",
+      "target_node_id": "seg-75",
+      "relation": "elaborates",
+      "extraction_confidence": 0.7,
+      "evidence_span": "That day, I walked almost 12KM without even realizing it."
+    },
+    {
+      "id": "edge-llm-11",
+      "source_node_id": "seg-82",
+      "target_node_id": "seg-83",
+      "relation": "causes",
+      "extraction_confidence": 0.8,
+      "evidence_span": "We kept talking and learning more about each other. We became very aware of each other's patterns and mental states."
+    },
+    {
+      "id": "edge-llm-12",
+      "source_node_id": "seg-94",
+      "target_node_id": "seg-91",
+      "relation": "undercuts",
+      "extraction_confidence": 0.8,
+      "evidence_span": "We had a light dinner and talked about our future."
+    },
+    {
+      "id": "edge-llm-13",
+      "source_node_id": "seg-98",
+      "target_node_id": "seg-96",
+      "relation": "elaborates",
+      "extraction_confidence": 0.8,
+      "evidence_span": "Goodbyes always feel heavy because I always fear I might not get to see the person again."
+    },
+    {
+      "id": "edge-llm-14",
+      "source_node_id": "seg-100",
+      "target_node_id": "seg-101",
+      "relation": "supports",
+      "extraction_confidence": 0.9,
+      "evidence_span": "but then my issues started appearing"
+    },
+    {
+      "id": "edge-llm-15",
+      "source_node_id": "seg-101",
+      "target_node_id": "seg-103",
+      "relation": "supports",
+      "extraction_confidence": 0.9,
+      "evidence_span": "My depression started growing, and I didn't even know what it was back then"
+    },
+    {
+      "id": "edge-llm-16",
+      "source_node_id": "seg-104",
+      "target_node_id": "seg-103",
+      "relation": "elaborates",
+      "extraction_confidence": 0.9,
+      "evidence_span": "I didn't know why it was happening"
+    },
+    {
+      "id": "edge-llm-17",
+      "source_node_id": "seg-112",
+      "target_node_id": "seg-111",
+      "relation": "elaborates",
+      "extraction_confidence": 0.7,
+      "evidence_span": "A few months later, I left for Sangli. We were both excited that I was finally out of my house."
+    },
+    {
+      "id": "edge-llm-18",
+      "source_node_id": "seg-115",
+      "target_node_id": "seg-116",
+      "relation": "causes",
+      "extraction_confidence": 0.7,
+      "evidence_span": "She had tried enough, but my behavior wasn't getting any better. One day, she decided to break it off and leave."
+    },
+    {
+      "id": "edge-llm-19",
+      "source_node_id": "seg-119",
+      "target_node_id": "seg-116",
+      "relation": "generalizes",
+      "extraction_confidence": 0.8,
+      "evidence_span": "But looking back, I realize anyone would have done the same thing."
+    },
+    {
+      "id": "edge-llm-20",
+      "source_node_id": "seg-119",
+      "target_node_id": "seg-116",
+      "relation": "extends",
+      "extraction_confidence": 0.8,
+      "evidence_span": "But looking back, I realize anyone would have done the same thing."
+    },
+    {
+      "id": "edge-llm-21",
+      "source_node_id": "seg-123",
+      "target_node_id": "seg-122",
+      "relation": "contradicts",
+      "extraction_confidence": 0.9,
+      "evidence_span": "That was part of it, but the real issue was the trauma I had accumulated since childhood."
+    },
+    {
+      "id": "edge-llm-22",
+      "source_node_id": "seg-121",
+      "target_node_id": "seg-120",
+      "relation": "extends",
+      "extraction_confidence": 0.85,
+      "evidence_span": "Things got much worse in Sangli after that, which I have already documented in previous entries."
+    },
+    {
+      "id": "edge-llm-23",
+      "source_node_id": "seg-126",
+      "target_node_id": "seg-127",
+      "relation": "causes",
+      "extraction_confidence": 0.85,
+      "evidence_span": "In mid-2024, she texted me, but I was still furious with my life and turned my anger onto her."
+    },
+    {
+      "id": "edge-llm-24",
+      "source_node_id": "seg-128",
+      "target_node_id": "seg-129",
+      "relation": "causes",
+      "extraction_confidence": 0.85,
+      "evidence_span": "Months later, I finally gained clarity on a lot of things, especially this relationship."
+    },
+    {
+      "id": "edge-llm-25",
+      "source_node_id": "seg-130",
+      "target_node_id": "seg-131",
+      "relation": "causes",
+      "extraction_confidence": 0.9,
+      "evidence_span": "There was no way for her to end things smoothly because I wouldn't have let it happen."
+    },
+    {
+      "id": "edge-llm-26",
+      "source_node_id": "seg-138",
+      "target_node_id": "seg-137",
+      "relation": "elaborates",
+      "extraction_confidence": 0.8,
+      "evidence_span": "I am still figuring out the last two, but Mink's impact was significant."
+    }
+  ],
+  "generated_at": "2026-10-04T11:58:43.820Z",
+  "schema_version": "1.0"
+}

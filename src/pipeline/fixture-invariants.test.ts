@@ -31,6 +31,12 @@ const FIXTURES: Fixture[] = [
     ir: "test-fixtures/smoke-ir-run3.json",
     source: "test-documents/medium-diary.txt",
   },
+  // The 141-segment benchmark IR — largest real document the pipeline has
+  // produced, so it exercises the rules at scale rather than on toy inputs.
+  {
+    ir: "test-fixtures/stress-141.ir.json",
+    source: "test-documents/trimmed-diary.txt",
+  },
 ];
 
 function repoPath(relative: string): string {
