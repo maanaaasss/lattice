@@ -5,10 +5,12 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.check.json",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "gold:label": "tsx scripts/gold-label.ts",
+    "eval": "tsx scripts/eval.ts",
     "smoke": "tsx scripts/smoke-test.ts",
     "smoke:direction": "tsx scripts/smoke-test.ts --direction-only",
     "smoke:causal": "tsx scripts/smoke-test.ts --causal-direction-only"

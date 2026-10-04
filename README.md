@@ -61,6 +61,18 @@ cp .env.example .env
 npm run smoke
 ```
 
+### Evaluation
+
+The invariant suite proves the IR is well-formed; it cannot say whether the labels are *right*. That needs gold-standard labels:
+
+```bash
+npm run gold:label -- test-documents/short-diary.txt   # machine draft, written with reviewed: false
+# hand-review gold/<name>.gold.json, then set "reviewed": true
+npm run eval -- --runs 3
+```
+
+`gold:label` refuses to overwrite a file marked `reviewed: true`. `eval` skips unreviewed drafts (`--include-unreviewed` scores them anyway, but the output says so) and reports node macro-F1, per-type precision/recall, attribution accuracy overall and on the non-self subset, edge precision/recall/F1 overall and per relation family, edge direction accuracy, and across-run stability. The machine-readable report lands in `eval/report.json`.
+
 ## License
 
 MIT

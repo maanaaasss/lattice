@@ -2,6 +2,13 @@ export interface LLMClient {
   complete(systemPrompt: string, userPrompt: string): Promise<string>;
 }
 
+export interface LLMUsageRecord {
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+  reasoningTokens: number | null;
+}
+
 export class DailyTokenLimitError extends Error {
   constructor(message: string) {
     super(message);
@@ -10,6 +17,11 @@ export class DailyTokenLimitError extends Error {
 }
 
 export class OpenAICompatibleClient implements LLMClient {
+  // Every response's token accounting, accumulated across the client's
+  // lifetime so callers can report what a run actually cost instead of
+  // reconstructing it from stdout.
+  readonly usageLog: LLMUsageRecord[] = [];
+
   private baseUrl: string;
   private apiKey: string;
   private model: string;
@@ -106,6 +118,12 @@ export class OpenAICompatibleClient implements LLMClient {
       if (data.usage) {
         const { prompt_tokens, completion_tokens, total_tokens } = data.usage;
         const reasoning_tokens = data.usage.completion_tokens_details?.reasoning_tokens;
+        this.usageLog.push({
+          promptTokens: prompt_tokens ?? 0,
+          completionTokens: completion_tokens ?? 0,
+          totalTokens: total_tokens ?? 0,
+          reasoningTokens: typeof reasoning_tokens === "number" ? reasoning_tokens : null,
+        });
         console.log(
           `[LLM usage] prompt=${prompt_tokens} completion=${completion_tokens} reasoning=${reasoning_tokens ?? "n/a"} total=${total_tokens}`
         );

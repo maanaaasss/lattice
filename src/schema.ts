@@ -51,7 +51,7 @@ export interface SemanticIR {
 // Runtime mirror of the TypeScript interfaces above. The two live in the
 // same file so neither can change without the other showing up in the diff.
 
-const NodeTypeSchema = z.enum(["Claim", "Observation", "Decision", "Memory", "Value", "Emotion", "Event", "Confluence"]);
+export const NodeTypeSchema = z.enum(["Claim", "Observation", "Decision", "Memory", "Value", "Emotion", "Event", "Confluence"]);
 
 const ATTRIBUTION_TYPES = ["self", "citation", "external"] as const;
 
@@ -80,7 +80,7 @@ const SemanticNodeSchema = z.object({
   segmentation_note: z.string().optional(),
 });
 
-const EdgeRelationSchema = z.enum([
+export const EdgeRelationSchema = z.enum([
   "supports", "contradicts", "undercuts", "elaborates", "generalizes",
   "causes", "enables", "establishes", "extends", "overrules", "contributes_to",
   "precedes", "revises", "depends_on",
@@ -115,4 +115,26 @@ export const DIRECTION_RULES: Partial<Record<SemanticEdge["relation"], Direction
   // establishes/extends are NOT included — same causal family, but
   // their directionality has not been empirically tested. Do not add
   // them speculatively.
+};
+
+// Relation families as grouped in Docs/semantic_ir_schema_v1.md. Eval
+// reports precision/recall per family, because a miss on `precedes` and a
+// miss on `causes` are not the same kind of failure.
+export type RelationFamily = "logical" | "causal" | "temporal" | "dependency";
+
+export const RELATION_FAMILIES: Record<EdgeRelation, RelationFamily> = {
+  supports: "logical",
+  contradicts: "logical",
+  undercuts: "logical",
+  elaborates: "logical",
+  generalizes: "logical",
+  causes: "causal",
+  enables: "causal",
+  establishes: "causal",
+  extends: "causal",
+  overrules: "causal",
+  contributes_to: "causal",
+  precedes: "temporal",
+  revises: "temporal",
+  depends_on: "dependency",
 };

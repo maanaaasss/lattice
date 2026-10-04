@@ -462,3 +462,119 @@ describe("OpenAICompatibleClient usage logging", () => {
     expect(logSpy).not.toHaveBeenCalled();
   });
 });
+
+describe("OpenAICompatibleClient.usageLog", () => {
+  function successWithUsage(content: string, usage: Record<string, unknown>) {
+    return new Response(
+      JSON.stringify({ choices: [{ message: { content } }], usage }),
+      { status: 200, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
+  function successWithoutUsage(content: string) {
+    return new Response(
+      JSON.stringify({ choices: [{ message: { content } }] }),
+      { status: 200, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
+  it("starts empty", () => {
+    expect(makeClient().usageLog).toEqual([]);
+  });
+
+  it("records one entry per successful call with reasoning tokens", async () => {
+    vi.spyOn(console, "log").mockImplementation(() => {});
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        successWithUsage("a", {
+          prompt_tokens: 100,
+          completion_tokens: 50,
+          total_tokens: 150,
+          completion_tokens_details: { reasoning_tokens: 30 },
+        })
+      )
+    );
+
+    const client = makeClient();
+    await client.complete("sys", "usr");
+
+    expect(client.usageLog).toEqual([
+      {
+        promptTokens: 100,
+        completionTokens: 50,
+        totalTokens: 150,
+        reasoningTokens: 30,
+      },
+    ]);
+  });
+
+  it("records null reasoning tokens when the detail is absent", async () => {
+    vi.spyOn(console, "log").mockImplementation(() => {});
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        successWithUsage("a", {
+          prompt_tokens: 200,
+          completion_tokens: 80,
+          total_tokens: 280,
+        })
+      )
+    );
+
+    const client = makeClient();
+    await client.complete("sys", "usr");
+
+    expect(client.usageLog).toHaveLength(1);
+    expect(client.usageLog[0].reasoningTokens).toBeNull();
+  });
+
+  it("appends across calls rather than overwriting", async () => {
+    vi.spyOn(console, "log").mockImplementation(() => {});
+    vi.stubGlobal(
+      "fetch",
+      vi
+        .fn()
+        .mockResolvedValueOnce(
+          successWithUsage("a", {
+            prompt_tokens: 10,
+            completion_tokens: 5,
+            total_tokens: 15,
+          })
+        )
+        .mockResolvedValueOnce(
+          successWithUsage("b", {
+            prompt_tokens: 20,
+            completion_tokens: 5,
+            total_tokens: 25,
+          })
+        )
+    );
+
+    const client = makeClient();
+    await client.complete("sys", "usr");
+    await client.complete("sys", "usr");
+
+    expect(client.usageLog).toHaveLength(2);
+    expect(client.usageLog.map((u) => u.totalTokens)).toEqual([15, 25]);
+  });
+
+  it("records nothing when the response omits usage", async () => {
+    vi.spyOn(console, "log").mockImplementation(() => {});
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(successWithoutUsage("ok")));
+
+    const client = makeClient();
+    await client.complete("sys", "usr");
+
+    expect(client.usageLog).toEqual([]);
+  });
+
+  it("does not record an entry for a failed request", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("boom", { status: 500 })));
+
+    const client = makeClient();
+    await expect(client.complete("sys", "usr")).rejects.toThrow();
+
+    expect(client.usageLog).toEqual([]);
+  });
+});
