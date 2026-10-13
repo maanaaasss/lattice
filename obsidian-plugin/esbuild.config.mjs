@@ -1,8 +1,15 @@
 import esbuild from "esbuild";
 import builtins from "builtin-modules";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
+
+// Paths are resolved from this file, not the cwd, so the build emits the
+// same artifacts no matter where it is invoked from.
+const pluginDir = path.dirname(fileURLToPath(import.meta.url));
+const rootDir = path.resolve(pluginDir, "..");
 
 const context = await esbuild.context({
-  entryPoints: ["main.ts"],
+  entryPoints: [path.join(pluginDir, "main.ts")],
   bundle: true,
   external: [
     "obsidian",
@@ -25,9 +32,11 @@ const context = await esbuild.context({
   logLevel: "info",
   sourcemap: process.argv.includes("--production") ? false : "inline",
   treeShaking: true,
-  outfile: "main.js",
+  // Obsidian convention: the plugin bundle lives at the repo root next to
+  // manifest.json, which is also where release assets are picked up from.
+  outfile: path.join(rootDir, "main.js"),
   // Resolve parent project's src/ imports
-  nodePaths: [".."],
+  nodePaths: [rootDir],
 });
 
 if (process.argv.includes("--watch")) {

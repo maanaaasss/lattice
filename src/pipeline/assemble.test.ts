@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import type { SemanticNode, SemanticEdge, SemanticIR } from "../schema.js";
+import type { SemanticNode, SemanticEdge } from "../schema.js";
 import { SemanticIRSchema } from "../schema.js";
 import { assembleSemanticIR } from "./assemble.js";
 

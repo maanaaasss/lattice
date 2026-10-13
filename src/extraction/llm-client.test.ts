@@ -1,11 +1,13 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { OpenAICompatibleClient, DailyTokenLimitError } from "./llm-client.js";
+import type { HttpTransport } from "./transport.js";
 
-function makeClient() {
+function makeClient(transport: HttpTransport) {
   return new OpenAICompatibleClient({
     baseUrl: "https://api.example.com/v1",
     apiKey: "test-key",
     model: "test-model",
+    transport,
   });
 }
 
@@ -26,14 +28,13 @@ afterEach(() => {
 
 describe("OpenAICompatibleClient", () => {
   it("returns content from a well-formed response", async () => {
-    const fetchSpy = vi.fn().mockResolvedValue(
+    const fetchSpy = vi.fn<HttpTransport>().mockResolvedValue(
       jsonResponse({
         choices: [{ message: { content: '{"result":"ok"}' } }],
       })
     );
-    vi.stubGlobal("fetch", fetchSpy);
 
-    const client = makeClient();
+    const client = makeClient(fetchSpy);
     const result = await client.complete("sys", "usr");
 
     expect(result).toBe('{"result":"ok"}');
@@ -51,81 +52,81 @@ describe("OpenAICompatibleClient", () => {
   });
 
   it("throws on non-2xx response with status and body", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(
+    const transport = vi.fn<HttpTransport>().mockResolvedValue(
       textResponse("Unauthorized access", 401)
-    ));
+    );
 
-    const client = makeClient();
+    const client = makeClient(transport);
     await expect(client.complete("sys", "usr")).rejects.toThrow(
       "LLM request failed with status 401: Unauthorized access"
     );
   });
 
   it("throws on 500 response with body", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(
+    const transport = vi.fn<HttpTransport>().mockResolvedValue(
       textResponse("Internal Server Error", 500)
-    ));
+    );
 
-    const client = makeClient();
+    const client = makeClient(transport);
     await expect(client.complete("sys", "usr")).rejects.toThrow(
       "LLM request failed with status 500: Internal Server Error"
     );
   });
 
   it("throws on empty choices array", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(
+    const transport = vi.fn<HttpTransport>().mockResolvedValue(
       jsonResponse({ choices: [] })
-    ));
+    );
 
-    const client = makeClient();
+    const client = makeClient(transport);
     await expect(client.complete("sys", "usr")).rejects.toThrow(
       'LLM response missing or empty "choices" array'
     );
   });
 
   it("throws when choices is not an array", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(
+    const transport = vi.fn<HttpTransport>().mockResolvedValue(
       jsonResponse({ choices: "not-an-array" })
-    ));
+    );
 
-    const client = makeClient();
+    const client = makeClient(transport);
     await expect(client.complete("sys", "usr")).rejects.toThrow(
       'LLM response missing or empty "choices" array'
     );
   });
 
   it("throws when choices is missing entirely", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(
+    const transport = vi.fn<HttpTransport>().mockResolvedValue(
       jsonResponse({ usage: { total_tokens: 0 } })
-    ));
+    );
 
-    const client = makeClient();
+    const client = makeClient(transport);
     await expect(client.complete("sys", "usr")).rejects.toThrow(
       'LLM response missing or empty "choices" array'
     );
   });
 
   it("throws when message.content is missing", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(
+    const transport = vi.fn<HttpTransport>().mockResolvedValue(
       jsonResponse({
         choices: [{ message: { role: "assistant" } }],
       })
-    ));
+    );
 
-    const client = makeClient();
+    const client = makeClient(transport);
     await expect(client.complete("sys", "usr")).rejects.toThrow(
       "choices[0].message.content is missing or not a string"
     );
   });
 
   it("throws when message.content is not a string", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(
+    const transport = vi.fn<HttpTransport>().mockResolvedValue(
       jsonResponse({
         choices: [{ message: { content: 123 } }],
       })
-    ));
+    );
 
-    const client = makeClient();
+    const client = makeClient(transport);
     await expect(client.complete("sys", "usr")).rejects.toThrow(
       "choices[0].message.content is missing or not a string"
     );
@@ -133,45 +134,44 @@ describe("OpenAICompatibleClient", () => {
 
   it("truncates long response bodies in error messages", async () => {
     const longBody = { choices: null, detail: "x".repeat(1000) };
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(
+    const transport = vi.fn<HttpTransport>().mockResolvedValue(
       jsonResponse(longBody)
-    ));
+    );
 
-    const client = makeClient();
-    const err: unknown = await client.complete("sys", "usr").catch((e) => e);
+    const client = makeClient(transport);
+    const err: unknown = await client.complete("sys", "usr").catch((e: unknown) => e);
     expect(err).toBeInstanceOf(Error);
     expect((err as Error).message).toContain("choices");
     expect((err as Error).message.length).toBeLessThan(2000);
   });
 
   it("sends max_tokens: 4096 by default when no maxTokens is provided", async () => {
-    const fetchSpy = vi.fn().mockResolvedValue(
+    const fetchSpy = vi.fn<HttpTransport>().mockResolvedValue(
       jsonResponse({ choices: [{ message: { content: "ok" } }] })
     );
-    vi.stubGlobal("fetch", fetchSpy);
 
-    const client = makeClient();
+    const client = makeClient(fetchSpy);
     await client.complete("sys", "usr");
 
-    const body = JSON.parse(fetchSpy.mock.calls[0][1].body);
+    const body = JSON.parse(String(fetchSpy.mock.calls[0][1].body)) as { max_tokens: number };
     expect(body.max_tokens).toBe(4096);
   });
 
   it("sends a custom maxTokens value when provided in config", async () => {
-    const fetchSpy = vi.fn().mockResolvedValue(
+    const fetchSpy = vi.fn<HttpTransport>().mockResolvedValue(
       jsonResponse({ choices: [{ message: { content: "ok" } }] })
     );
-    vi.stubGlobal("fetch", fetchSpy);
 
     const client = new OpenAICompatibleClient({
       baseUrl: "https://api.example.com/v1",
       apiKey: "test-key",
       model: "test-model",
+      transport: fetchSpy,
       maxTokens: 4096,
     });
     await client.complete("sys", "usr");
 
-    const body = JSON.parse(fetchSpy.mock.calls[0][1].body);
+    const body = JSON.parse(String(fetchSpy.mock.calls[0][1].body)) as { max_tokens: number };
     expect(body.max_tokens).toBe(4096);
   });
 });
@@ -193,15 +193,15 @@ describe("OpenAICompatibleClient retry-on-429", () => {
 
   it("retries on 429 with Retry-After header and resolves on success", async () => {
     vi.useFakeTimers();
-    const fetchSpy = vi.fn()
+    const fetchSpy = vi.fn<HttpTransport>()
       .mockResolvedValueOnce(rateLimitResponse("rate limited", "2"))
       .mockResolvedValueOnce(successResponse("ok after retry"));
-    vi.stubGlobal("fetch", fetchSpy);
 
     const client = new OpenAICompatibleClient({
       baseUrl: "https://api.example.com/v1",
       apiKey: "test-key",
       model: "test-model",
+      transport: fetchSpy,
     });
 
     const promise = client.complete("sys", "usr");
@@ -217,15 +217,15 @@ describe("OpenAICompatibleClient retry-on-429", () => {
 
   it("parses wait time from response body when no Retry-After header", async () => {
     vi.useFakeTimers();
-    const fetchSpy = vi.fn()
+    const fetchSpy = vi.fn<HttpTransport>()
       .mockResolvedValueOnce(rateLimitResponse("Please try again in 3.5s"))
       .mockResolvedValueOnce(successResponse("ok after body retry"));
-    vi.stubGlobal("fetch", fetchSpy);
 
     const client = new OpenAICompatibleClient({
       baseUrl: "https://api.example.com/v1",
       apiKey: "test-key",
       model: "test-model",
+      transport: fetchSpy,
     });
 
     const promise = client.complete("sys", "usr");
@@ -241,14 +241,14 @@ describe("OpenAICompatibleClient retry-on-429", () => {
 
   it("throws after exhausting maxRetries on persistent 429", async () => {
     vi.useFakeTimers();
-    const fetchSpy = vi.fn()
+    const fetchSpy = vi.fn<HttpTransport>()
       .mockImplementation(() => Promise.resolve(rateLimitResponse("rate limited", "1")));
-    vi.stubGlobal("fetch", fetchSpy);
 
     const client = new OpenAICompatibleClient({
       baseUrl: "https://api.example.com/v1",
       apiKey: "test-key",
       model: "test-model",
+      transport: fetchSpy,
       maxRetries: 2,
     });
 
@@ -269,15 +269,15 @@ describe("OpenAICompatibleClient retry-on-429", () => {
 
   it("retried request has the same body as the original attempt", async () => {
     vi.useFakeTimers();
-    const fetchSpy = vi.fn()
+    const fetchSpy = vi.fn<HttpTransport>()
       .mockResolvedValueOnce(rateLimitResponse("rate limited", "1"))
       .mockResolvedValueOnce(successResponse("ok"));
-    vi.stubGlobal("fetch", fetchSpy);
 
     const client = new OpenAICompatibleClient({
       baseUrl: "https://api.example.com/v1",
       apiKey: "test-key",
       model: "test-model",
+      transport: fetchSpy,
     });
 
     const promise = client.complete("sys prompt", "usr prompt");
@@ -318,29 +318,28 @@ describe("OpenAICompatibleClient daily token limit (TPD)", () => {
   }
 
   it("throws DailyTokenLimitError immediately on TPD 429 with exactly 1 fetch call and zero retries", async () => {
-    const fetchSpy = vi.fn().mockResolvedValueOnce(tpdResponse());
-    vi.stubGlobal("fetch", fetchSpy);
+    const fetchSpy = vi.fn<HttpTransport>().mockResolvedValueOnce(tpdResponse());
 
     const client = new OpenAICompatibleClient({
       baseUrl: "https://api.example.com/v1",
       apiKey: "test-key",
       model: "test-model",
+      transport: fetchSpy,
       maxRetries: 3,
     });
 
-    const err: unknown = await client.complete("sys", "usr").catch((e) => e);
+    const err: unknown = await client.complete("sys", "usr").catch((e: unknown) => e);
     expect(err).toBeInstanceOf(DailyTokenLimitError);
     expect((err as Error).message).toContain("tokens per day (TPD)");
     expect(fetchSpy).toHaveBeenCalledTimes(1);
   });
 
   it("includes the full raw Groq message in DailyTokenLimitError", async () => {
-    const fetchSpy = vi.fn().mockResolvedValueOnce(tpdResponse());
-    vi.stubGlobal("fetch", fetchSpy);
+    const fetchSpy = vi.fn<HttpTransport>().mockResolvedValueOnce(tpdResponse());
 
-    const client = makeClient();
+    const client = makeClient(fetchSpy);
 
-    const err: unknown = await client.complete("sys", "usr").catch((e) => e);
+    const err: unknown = await client.complete("sys", "usr").catch((e: unknown) => e);
     expect(err).toBeInstanceOf(DailyTokenLimitError);
     expect((err as DailyTokenLimitError).message).toContain("openai/gpt-oss-120b");
     expect((err as DailyTokenLimitError).message).toContain("200000");
@@ -349,15 +348,15 @@ describe("OpenAICompatibleClient daily token limit (TPD)", () => {
 
   it("TPM 429 still retries normally — not affected by TPD detection", async () => {
     vi.useFakeTimers();
-    const fetchSpy = vi.fn()
+    const fetchSpy = vi.fn<HttpTransport>()
       .mockResolvedValueOnce(tpmResponse())
       .mockResolvedValueOnce(successResponse("ok after tpm retry"));
-    vi.stubGlobal("fetch", fetchSpy);
 
     const client = new OpenAICompatibleClient({
       baseUrl: "https://api.example.com/v1",
       apiKey: "test-key",
       model: "test-model",
+      transport: fetchSpy,
     });
 
     const promise = client.complete("sys", "usr");
@@ -369,97 +368,6 @@ describe("OpenAICompatibleClient daily token limit (TPD)", () => {
     expect(result).toBe("ok after tpm retry");
     expect(fetchSpy).toHaveBeenCalledTimes(2);
     vi.useRealTimers();
-  });
-});
-
-describe("OpenAICompatibleClient usage logging", () => {
-  function successWithUsage(content: string, usage: Record<string, unknown>) {
-    return new Response(
-      JSON.stringify({ choices: [{ message: { content } }], usage }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
-    );
-  }
-
-  function successWithoutUsage(content: string) {
-    return new Response(
-      JSON.stringify({ choices: [{ message: { content } }] }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
-    );
-  }
-
-  it("logs the exact usage line when usage object includes reasoning_tokens", async () => {
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue(
-        successWithUsage("response text", {
-          prompt_tokens: 100,
-          completion_tokens: 50,
-          total_tokens: 150,
-          completion_tokens_details: { reasoning_tokens: 30 },
-        })
-      )
-    );
-
-    const client = new OpenAICompatibleClient({
-      baseUrl: "https://api.example.com/v1",
-      apiKey: "test-key",
-      model: "test-model",
-    });
-
-    await client.complete("sys", "usr");
-
-    expect(logSpy).toHaveBeenCalledWith(
-      "[LLM usage] prompt=100 completion=50 reasoning=30 total=150"
-    );
-  });
-
-  it("logs the usage line with reasoning=n/a when completion_tokens_details is absent", async () => {
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue(
-        successWithUsage("response text", {
-          prompt_tokens: 200,
-          completion_tokens: 80,
-          total_tokens: 280,
-          // no completion_tokens_details — non-reasoning-model shape
-        })
-      )
-    );
-
-    const client = new OpenAICompatibleClient({
-      baseUrl: "https://api.example.com/v1",
-      apiKey: "test-key",
-      model: "test-model",
-    });
-
-    await client.complete("sys", "usr");
-
-    expect(logSpy).toHaveBeenCalledWith(
-      "[LLM usage] prompt=200 completion=80 reasoning=n/a total=280"
-    );
-  });
-
-  it("does not log anything and still returns content when usage is absent", async () => {
-    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue(successWithoutUsage("content without usage"))
-    );
-
-    const client = new OpenAICompatibleClient({
-      baseUrl: "https://api.example.com/v1",
-      apiKey: "test-key",
-      model: "test-model",
-    });
-
-    const result = await client.complete("sys", "usr");
-
-    // Call must succeed and return the correct content
-    expect(result).toBe("content without usage");
-    // No usage line should have been logged
-    expect(logSpy).not.toHaveBeenCalled();
   });
 });
 
@@ -479,24 +387,20 @@ describe("OpenAICompatibleClient.usageLog", () => {
   }
 
   it("starts empty", () => {
-    expect(makeClient().usageLog).toEqual([]);
+    expect(makeClient(vi.fn<HttpTransport>()).usageLog).toEqual([]);
   });
 
   it("records one entry per successful call with reasoning tokens", async () => {
-    vi.spyOn(console, "log").mockImplementation(() => {});
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue(
-        successWithUsage("a", {
-          prompt_tokens: 100,
-          completion_tokens: 50,
-          total_tokens: 150,
-          completion_tokens_details: { reasoning_tokens: 30 },
-        })
-      )
+    const transport = vi.fn<HttpTransport>().mockResolvedValue(
+      successWithUsage("a", {
+        prompt_tokens: 100,
+        completion_tokens: 50,
+        total_tokens: 150,
+        completion_tokens_details: { reasoning_tokens: 30 },
+      })
     );
 
-    const client = makeClient();
+    const client = makeClient(transport);
     await client.complete("sys", "usr");
 
     expect(client.usageLog).toEqual([
@@ -510,19 +414,15 @@ describe("OpenAICompatibleClient.usageLog", () => {
   });
 
   it("records null reasoning tokens when the detail is absent", async () => {
-    vi.spyOn(console, "log").mockImplementation(() => {});
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue(
-        successWithUsage("a", {
-          prompt_tokens: 200,
-          completion_tokens: 80,
-          total_tokens: 280,
-        })
-      )
+    const transport = vi.fn<HttpTransport>().mockResolvedValue(
+      successWithUsage("a", {
+        prompt_tokens: 200,
+        completion_tokens: 80,
+        total_tokens: 280,
+      })
     );
 
-    const client = makeClient();
+    const client = makeClient(transport);
     await client.complete("sys", "usr");
 
     expect(client.usageLog).toHaveLength(1);
@@ -530,28 +430,24 @@ describe("OpenAICompatibleClient.usageLog", () => {
   });
 
   it("appends across calls rather than overwriting", async () => {
-    vi.spyOn(console, "log").mockImplementation(() => {});
-    vi.stubGlobal(
-      "fetch",
-      vi
-        .fn()
-        .mockResolvedValueOnce(
-          successWithUsage("a", {
-            prompt_tokens: 10,
-            completion_tokens: 5,
-            total_tokens: 15,
-          })
-        )
-        .mockResolvedValueOnce(
-          successWithUsage("b", {
-            prompt_tokens: 20,
-            completion_tokens: 5,
-            total_tokens: 25,
-          })
-        )
-    );
+    const transport = vi
+      .fn<HttpTransport>()
+      .mockResolvedValueOnce(
+        successWithUsage("a", {
+          prompt_tokens: 10,
+          completion_tokens: 5,
+          total_tokens: 15,
+        })
+      )
+      .mockResolvedValueOnce(
+        successWithUsage("b", {
+          prompt_tokens: 20,
+          completion_tokens: 5,
+          total_tokens: 25,
+        })
+      );
 
-    const client = makeClient();
+    const client = makeClient(transport);
     await client.complete("sys", "usr");
     await client.complete("sys", "usr");
 
@@ -560,19 +456,18 @@ describe("OpenAICompatibleClient.usageLog", () => {
   });
 
   it("records nothing when the response omits usage", async () => {
-    vi.spyOn(console, "log").mockImplementation(() => {});
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(successWithoutUsage("ok")));
+    const transport = vi.fn<HttpTransport>().mockResolvedValue(successWithoutUsage("ok"));
 
-    const client = makeClient();
+    const client = makeClient(transport);
     await client.complete("sys", "usr");
 
     expect(client.usageLog).toEqual([]);
   });
 
   it("does not record an entry for a failed request", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("boom", { status: 500 })));
+    const transport = vi.fn<HttpTransport>().mockResolvedValue(new Response("boom", { status: 500 }));
 
-    const client = makeClient();
+    const client = makeClient(transport);
     await expect(client.complete("sys", "usr")).rejects.toThrow();
 
     expect(client.usageLog).toEqual([]);

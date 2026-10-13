@@ -55,15 +55,20 @@ export const NodeTypeSchema = z.enum(["Claim", "Observation", "Decision", "Memor
 
 const ATTRIBUTION_TYPES = ["self", "citation", "external"] as const;
 
-const AttributionSchema = z.any().optional().transform((v) => {
-  if (!v || typeof v !== "object" || typeof v.type !== "string") {
-    return { type: "self" as const, ref: null as string | null };
+function isAttributionType(value: string): value is Attribution["type"] {
+  return (ATTRIBUTION_TYPES as readonly string[]).includes(value);
+}
+
+const AttributionSchema = z.unknown().optional().transform((v): Attribution => {
+  if (v == null || typeof v !== "object") {
+    return { type: "self", ref: null };
   }
-  if (!(ATTRIBUTION_TYPES as readonly string[]).includes(v.type)) {
-    return { type: "self" as const, ref: null as string | null };
+  const fields = v as Record<string, unknown>;
+  if (typeof fields.type !== "string" || !isAttributionType(fields.type)) {
+    return { type: "self", ref: null };
   }
-  const ref = v.ref == null ? null : typeof v.ref === "string" ? v.ref : null;
-  return { type: v.type as "self" | "citation" | "external", ref };
+  const ref = typeof fields.ref === "string" ? fields.ref : null;
+  return { type: fields.type, ref };
 });
 
 const SemanticNodeSchema = z.object({

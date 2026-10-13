@@ -103,7 +103,7 @@ describe("RateLimitedClient", () => {
 
     // Second call: 503 + 503 = 1006 > 600, must wait
     let resolved = false;
-    client.complete("abcde", "abcde").then(() => {
+    void client.complete("abcde", "abcde").then(() => {
       resolved = true;
     });
 

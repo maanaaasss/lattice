@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import type { LLMClient } from "./llm-client.js";
 import type { RawSegment } from "../segmentation/segment.js";
 import { classifySegments, classifySegmentsBatched, EXTRACTION_SYSTEM_PROMPT, ClassificationSchema } from "./classify.js";
+import { sleep } from "../runtime.js";
 
 function mockClient(response: string): LLMClient {
   return {
@@ -134,7 +135,7 @@ describe("classifySegments", () => {
     });
 
     const client = mockClient(invalid);
-    const err = await classifySegments(sampleSegments, "doc-1", client).catch((e) => e);
+    const err = await classifySegments(sampleSegments, "doc-1", client).catch((e: unknown) => e);
 
     expect(err).toBeInstanceOf(Error);
     const msg = (err as Error).message;
@@ -368,7 +369,7 @@ describe("classifySegments", () => {
     await classifySegments(sampleSegments, "doc-1", spy);
 
     expect(capturedSystem).toBe(EXTRACTION_SYSTEM_PROMPT);
-    const parsed = JSON.parse(capturedUser);
+    const parsed = JSON.parse(capturedUser) as Array<{ id: string; text: string }>;
     expect(parsed).toHaveLength(3);
     expect(parsed[0].id).toBe("seg-0");
     expect(parsed[0].text).toBe("I feel overwhelmed by the workload.");
@@ -377,7 +378,7 @@ describe("classifySegments", () => {
   it("uses startIndex to generate globally correct segment ids", async () => {
     const dynamicClient: LLMClient = {
       async complete(_systemPrompt: string, userPrompt: string) {
-        const segments = JSON.parse(userPrompt);
+        const segments = JSON.parse(userPrompt) as Array<{ id: string; text: string }>;
         return JSON.stringify({
           classifications: segments.map((s: { id: string }) => ({
             segment_id: s.id,
@@ -464,7 +465,7 @@ describe("classifySegmentsBatched", () => {
     const client: LLMClient & { calls: string[][] } = {
       calls: [],
       async complete(_systemPrompt: string, userPrompt: string) {
-        const segments = JSON.parse(userPrompt);
+        const segments = JSON.parse(userPrompt) as Array<{ id: string; text: string }>;
         client.calls.push(segments.map((s: { id: string }) => s.id));
 
         return JSON.stringify({
@@ -530,8 +531,8 @@ describe("classifySegmentsBatched", () => {
         inFlight++;
         if (inFlight > maxConcurrent) maxConcurrent = inFlight;
 
-        const segs = JSON.parse(userPrompt);
-        await new Promise((r) => setTimeout(r, 10));
+        const segs = JSON.parse(userPrompt) as Array<{ id: string; text: string }>;
+        await sleep(10);
         inFlight--;
 
         return JSON.stringify({

@@ -1,6 +1,6 @@
 import { z, ZodError } from "zod";
 import type { RawSegment } from "../segmentation/segment.js";
-import type { SemanticNode, NodeType, Attribution } from "../schema.js";
+import type { SemanticNode, Attribution } from "../schema.js";
 import type { LLMClient } from "./llm-client.js";
 
 export const EXTRACTION_SYSTEM_PROMPT = `You are performing semantic node classification for a text-analysis pipeline. You will receive a JSON array of text segments from a single document, each with an id and its text. Classify EVERY segment into exactly one node type from this fixed list:
@@ -25,23 +25,33 @@ Every segment_id given to you must appear exactly once in the output. Do not inv
 
 const ATTRIBUTION_TYPES = ["self", "citation", "external"] as const;
 
+function isAttributionType(value: string): value is Attribution["type"] {
+  return (ATTRIBUTION_TYPES as readonly string[]).includes(value);
+}
+
 const ClassificationItemSchema = z.object({
   segment_id: z.string(),
   type: z.enum(["Claim", "Observation", "Decision", "Memory", "Value", "Emotion", "Event"]),
-  subtype: z.any().optional().transform((v) => (v == null ? undefined : String(v))),
-  attribution: z.any().optional().transform((v) => {
-    if (!v || typeof v !== "object" || typeof v.type !== "string") {
-      return { type: "self" as const, ref: null as string | null };
-    }
-    if (!(ATTRIBUTION_TYPES as readonly string[]).includes(v.type)) {
-      return { type: "self" as const, ref: null as string | null };
-    }
-    const ref = v.ref == null ? null : typeof v.ref === "string" ? v.ref : null;
-    return { type: v.type as "self" | "citation" | "external", ref };
+  subtype: z.unknown().optional().transform((v) => {
+    if (v == null) return undefined;
+    if (typeof v === "string") return v;
+    if (typeof v === "number" || typeof v === "boolean") return String(v);
+    return undefined;
   }),
-  epistemic_confidence: z.any().optional().transform((v) => {
+  attribution: z.unknown().optional().transform((v): Attribution => {
+    if (v == null || typeof v !== "object") {
+      return { type: "self", ref: null };
+    }
+    const fields = v as Record<string, unknown>;
+    if (typeof fields.type !== "string" || !isAttributionType(fields.type)) {
+      return { type: "self", ref: null };
+    }
+    const ref = typeof fields.ref === "string" ? fields.ref : null;
+    return { type: fields.type, ref };
+  }),
+  epistemic_confidence: z.unknown().optional().transform((v) => {
     if (v == null) return null;
-    const n = typeof v === "number" ? v : parseFloat(v);
+    const n = typeof v === "number" ? v : typeof v === "string" ? parseFloat(v) : NaN;
     return Number.isFinite(n) ? Math.min(1, Math.max(0, n)) : null;
   }),
 });
@@ -63,18 +73,34 @@ function stripCodeFences(raw: string): string {
 function parseJsonLenient(raw: string): unknown {
   const cleaned = stripCodeFences(raw);
   try {
-    return JSON.parse(cleaned);
+    return JSON.parse(cleaned) as unknown;
   } catch {
     const objMatch = cleaned.match(/\{[\s\S]*\}/);
     if (objMatch) {
-      try { return JSON.parse(objMatch[0]); } catch { /* fall through */ }
+      try { return JSON.parse(objMatch[0]) as unknown; } catch { /* fall through */ }
     }
     const arrMatch = cleaned.match(/\[[\s\S]*\]/);
     if (arrMatch) {
-      try { return JSON.parse(arrMatch[0]); } catch { /* fall through */ }
+      try { return JSON.parse(arrMatch[0]) as unknown; } catch { /* fall through */ }
     }
     throw new Error(`Failed to parse JSON from LLM response:\n${cleaned.slice(0, 2000)}`);
   }
+}
+
+// Diagnostics for a rejected batch: pull the model's classifications out of
+// the unvalidated payload so the error can report which ids came back.
+interface RawClassification {
+  segment_id?: unknown;
+}
+
+function readClassifications(parsed: unknown): RawClassification[] {
+  if (parsed == null || typeof parsed !== "object") return [];
+  const list = (parsed as Record<string, unknown>).classifications;
+  return Array.isArray(list) ? (list as RawClassification[]) : [];
+}
+
+function readId(value: unknown): string {
+  return typeof value === "string" ? value : "(missing)";
 }
 
 export async function classifySegments(
@@ -104,10 +130,10 @@ export async function classifySegments(
       } catch (err) {
         if (err instanceof ZodError) {
           const rawTruncated = stripped.length > 3000 ? stripped.slice(0, 3000) + "…[truncated]" : stripped;
-          const classifications = Array.isArray((parsed as any)?.classifications) ? (parsed as any).classifications : [];
-          const returnedIds = classifications.map((c: { segment_id?: string }) => c.segment_id ?? "(missing)");
-          const extraIds = returnedIds.filter((id: string) => !expectedIds.includes(id));
-          const missingIds = expectedIds.filter((id: string) => !returnedIds.includes(id));
+          const classifications = readClassifications(parsed);
+          const returnedIds = classifications.map((c) => readId(c.segment_id));
+          const extraIds = returnedIds.filter((id) => !expectedIds.includes(id));
+          const missingIds = expectedIds.filter((id) => !returnedIds.includes(id));
           throw new Error(
             `Classification schema validation failed.\n` +
             `Batch: seg-${startIndex} to seg-${startIndex + segments.length - 1} (${segments.length} segments expected)\n` +
@@ -165,12 +191,12 @@ export async function classifySegments(
 
     nodes.push({
       id: segId,
-      type: classification.type as NodeType,
+      type: classification.type,
       subtype: classification.subtype ?? undefined,
       text_span: seg.text,
       source_document_id: documentId,
       span_location: { start: seg.start, end: seg.end },
-      attribution: classification.attribution as Attribution,
+      attribution: classification.attribution,
       temporal_position: null,
       epistemic_confidence: classification.epistemic_confidence,
       synthetic: false,

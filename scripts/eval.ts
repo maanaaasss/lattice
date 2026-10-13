@@ -22,6 +22,7 @@ import {
 import { relative, resolve } from "node:path";
 import { segmentText } from "../src/segmentation/segment.js";
 import { OpenAICompatibleClient, type LLMUsageRecord } from "../src/extraction/llm-client.js";
+import { nodeTransport } from "./node-transport.js";
 import { RateLimitedClient } from "../src/extraction/rate-limited-client.js";
 import { classifySegmentsBatched } from "../src/extraction/classify.js";
 import {
@@ -310,20 +311,22 @@ async function main() {
   console.log(`Documents: ${loaded.length}\n`);
 
   const classifyClient = new OpenAICompatibleClient({
+    transport: nodeTransport,
     baseUrl: process.env.LLM_BASE_URL!,
     apiKey: process.env.LLM_API_KEY!,
     model,
-  });
+ });
   const rateLimited = new RateLimitedClient(classifyClient, {
     tpmLimit: 8000,
     reservedCompletionTokens: 3000,
   });
   const relationClient = new OpenAICompatibleClient({
+    transport: nodeTransport,
     baseUrl: process.env.LLM_BASE_URL!,
     apiKey: process.env.LLM_API_KEY!,
     model,
     maxTokens: 8192,
-  });
+ });
   const relationRateLimited = new RateLimitedClient(relationClient, {
     tpmLimit: 8000,
     reservedCompletionTokens: 6000,

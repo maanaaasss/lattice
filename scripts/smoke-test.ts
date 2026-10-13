@@ -17,6 +17,7 @@ import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { segmentText } from "../src/segmentation/segment.js";
 import { OpenAICompatibleClient } from "../src/extraction/llm-client.js";
+import { nodeTransport } from "./node-transport.js";
 import { RateLimitedClient } from "../src/extraction/rate-limited-client.js";
 import { classifySegments, classifySegmentsBatched } from "../src/extraction/classify.js";
 import {
@@ -52,7 +53,7 @@ async function main() {
 
   const directionOnly = process.argv.slice(2).includes("--direction-only");
   const causalDirectionOnly = process.argv.slice(2).includes("--causal-direction-only");
-  const client = new OpenAICompatibleClient({ baseUrl, apiKey, model });
+  const client = new OpenAICompatibleClient({ transport: nodeTransport, baseUrl, apiKey, model });
   const rateLimitedClient = new RateLimitedClient(client, {
     tpmLimit: 8000,
     reservedCompletionTokens: 3000,
@@ -62,7 +63,7 @@ async function main() {
   // spent all 4096 tokens reasoning about relations and produced zero
   // content.  8192/6000 are a first attempt, not yet empirically verified;
   // the next run's finish_reason/usage data should confirm or revise.
-  const relationClient = new OpenAICompatibleClient({ baseUrl, apiKey, model, maxTokens: 8192 });
+  const relationClient = new OpenAICompatibleClient({ transport: nodeTransport, baseUrl, apiKey, model, maxTokens: 8192 });
   const relationRateLimitedClient = new RateLimitedClient(relationClient, {
     tpmLimit: 8000,
     // A single relation-extraction call's reserved cost (~1500 input for a

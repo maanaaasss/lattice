@@ -7,6 +7,7 @@ import {
   extractRelationsBatched,
   EXTRACT_RELATIONS_SYSTEM_PROMPT,
 } from "./extract-relations.js";
+import { sleep } from "../runtime.js";
 
 function mockClient(response: string): LLMClient {
   return {
@@ -337,7 +338,7 @@ describe("extractRelations", () => {
     await extractRelations(nodes, noRevisions, sourceDoc, spy);
 
     expect(capturedSystem).toBe(EXTRACT_RELATIONS_SYSTEM_PROMPT);
-    const parsed = JSON.parse(capturedUser);
+    const parsed = JSON.parse(capturedUser) as { nodes: Array<{ id: string; type: string; text: string }>; revision_candidates: Array<{ node_id: string; matched_marker: string }> };
     expect(parsed.nodes).toHaveLength(3);
     expect(parsed.nodes[0].id).toBe("seg-0");
     expect(parsed.nodes[0].type).toBe("Claim");
@@ -400,7 +401,7 @@ describe("extractRelations", () => {
 
     await extractRelations(nodes, candidates, sourceDoc, spy);
 
-    const parsed = JSON.parse(capturedUser);
+    const parsed = JSON.parse(capturedUser) as { nodes: Array<{ id: string; type: string; text: string }>; revision_candidates: Array<{ node_id: string; matched_marker: string }> };
     expect(parsed.revision_candidates).toHaveLength(1);
     expect(parsed.revision_candidates[0].node_id).toBe("seg-0");
     expect(parsed.revision_candidates[0].matched_marker).toBe(
@@ -447,7 +448,7 @@ describe("extractRelationsBatched", () => {
 
     const spy: LLMClient = {
       async complete(_systemPrompt: string, userPrompt: string) {
-        const payload = JSON.parse(userPrompt);
+        const payload = JSON.parse(userPrompt) as { nodes: Array<{ id: string }>; revision_candidates: RevisionCandidate[] };
         const batchIds = payload.nodes.map((n: { id: string }) => n.id);
         const edges = batchIds.slice(0, -1).map((id: string, i: number) => ({
           source_node_id: id,
@@ -464,7 +465,7 @@ describe("extractRelationsBatched", () => {
 
     const ids = result.map((e) => e.id);
     expect(new Set(ids).size).toBe(ids.length);
-    expect(ids).toEqual([...Array(ids.length)].map((_, i) => `edge-llm-${i}`));
+    expect(ids).toEqual(Array.from({ length: ids.length }, (_, i) => `edge-llm-${i}`));
   });
 
   it("filters revision candidates per batch", async () => {
@@ -479,7 +480,7 @@ describe("extractRelationsBatched", () => {
     const captured: RevisionCandidate[][] = [];
     const spy: LLMClient = {
       async complete(_systemPrompt: string, userPrompt: string) {
-        const payload = JSON.parse(userPrompt);
+        const payload = JSON.parse(userPrompt) as { nodes: Array<{ id: string }>; revision_candidates: RevisionCandidate[] };
         captured.push(payload.revision_candidates);
         return JSON.stringify({ edges: [] });
       },
@@ -505,7 +506,7 @@ describe("extractRelationsBatched", () => {
       async complete(_systemPrompt: string, _userPrompt: string) {
         inFlight++;
         if (inFlight > maxConcurrent) maxConcurrent = inFlight;
-        await new Promise((r) => setTimeout(r, 10));
+        await sleep(10);
         inFlight--;
         return JSON.stringify({ edges: [] });
       },

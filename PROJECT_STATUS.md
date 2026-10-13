@@ -2,11 +2,11 @@
 
 **One-line summary:** Free, open-source Obsidian plugin that compiles notes into a navigable semantic graph (typed nodes + typed edges, evidence-linked, schema-validated) using an LLM.
 
-## Current phase: Phase 2 (tiny prototype → hardened, released as v0.1.1)
+## Current phase: Phase 2 (tiny prototype → hardened, released as v0.1.2)
 
 Phase 0 (philosophy) and Phase 1 (schema design) are complete and documented in `Docs/semantic_ir_schema_v1.md`. Phase 2 (prove the architecture on real documents) is functionally complete — the full pipeline works, has been extensively hardened against real-world model failures, and the Obsidian plugin runs live in a real vault. Functional correctness is established across short and medium documents, including relation extraction with the dual-client configuration.
 
-**Released:** `0.1.1` on 2026-10-13 — tag matches the `manifest.json` version, `main.js` + `manifest.json` attached, built by CI from `main`. The earlier `0.1.0` tag points at the pre-hardening commit and is left in place for history.
+**Released:** `0.1.2` on 2026-10-13 — the Obsidian automated-review pass. Tag matches the `manifest.json` version; `main.js` + `manifest.json` are built by CI from the tag and carry GitHub build-provenance attestations. `0.1.1` (same day) and the pre-hardening `0.1.0` tag are left in place for history.
 
 A 141-segment stress test was completed on 2026-10-04 and is recorded in `Docs/stress_test_141.md`. It was run as a **benchmark, not a release gate** — it covers long-run batching, rate-limiter behavior, cross-batch relations, and quota handling under one specific API configuration (Groq free tier, 8000 TPM). Quota failures under that configuration reflect the test environment's limits, not plugin correctness. The document completed end to end with no failures: 141/141 segments classified, the invariant gate passed against source, and 0 rate-limit events across 32 calls.
 
@@ -17,7 +17,8 @@ A 141-segment stress test was completed on 2026-10-04 and is recorded in `Docs/s
 - Obsidian plugin: settings UI, one command to compile the active note, confirmed working live in a real vault
 - A major validation-integrity incident (eight unreviewed commits weakened core schema checks) was fully found and reversed — documented in `Docs/semantic_ir_schema_v1.md`
 - A mid-project model migration (the original model was discontinued by the provider) was navigated, with new rate limits and token budgets re-calibrated from real data
-- Packaging: README (accurate, discloses network/privacy behavior), LICENSE (MIT), CONTRIBUTING.md, manifest + `versions.json` at v0.1.1, release automation in `.github/workflows/release.yml`
+- Packaging: README (accurate, discloses network/privacy behavior), LICENSE (MIT), CONTRIBUTING.md, manifest + `versions.json` at v0.1.2, release automation in `.github/workflows/release.yml` (release notes + build-provenance attestations for both assets)
+- Review hardening (`0.1.2`): the official Obsidian lint stack (`eslint-plugin-obsidianmd`) runs in CI at zero warnings; `fetch` in the plugin path is replaced by an injected `requestUrl` transport; `getSettingDefinitions()` declared settings with a `display()` fallback; the build emits `main.js` at the repo root
 - Provider-agnostic configuration: base URL, API key, model, and client-side TPM throttle are all user-configurable — no provider-specific limits baked into the product
 - A 16-rule structural invariant suite that runs during assembly against the source text, plus fixture coverage over every committed IR (`src/pipeline/invariants.ts`)
 - A gold-standard label format and semantic eval harness (`src/eval`, `npm run gold:label`, `npm run eval`) — measures node macro/micro-F1, per-family edge P/R/F1, attribution accuracy, direction accuracy, and across-run stability
@@ -25,7 +26,7 @@ A 141-segment stress test was completed on 2026-10-04 and is recorded in `Docs/s
 
 ## What's blocking release right now
 
-Nothing. `0.1.1` is published on the public repo (`maanaaasss/lattice`) with the required release assets, `versions.json` is committed at HEAD, both CI jobs are green, and the plugin ID `semantic-ir-compiler` is unclaimed across all 8,835 listed plugins.
+Nothing. `0.1.2` is published on the public repo (`maanaaasss/lattice`) with the required release assets, build attestations, and release notes; `versions.json` is committed at HEAD, CI is green (typecheck, lint at zero warnings, tests, plugin build), and the plugin ID `semantic-ir-compiler` is unclaimed across all 8,835 listed plugins.
 
 ## What's left to reach users
 

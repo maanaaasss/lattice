@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { SemanticNode, SemanticEdge, EdgeRelation } from "../schema.js";
+import type { SemanticNode, SemanticEdge } from "../schema.js";
 import type { RevisionCandidate } from "./relations-rule-based.js";
 import type { LLMClient } from "./llm-client.js";
 
@@ -42,9 +42,9 @@ const RelationProposalSchema = z.object({
   target_node_id: z.any().transform(String),
   relation: z.enum(RELATION_ENUM),
   evidence_span: z.string().min(1),
-  extraction_confidence: z.any().optional().transform((v) => {
+  extraction_confidence: z.unknown().optional().transform((v) => {
     if (v == null) return 0.5;
-    const n = typeof v === "number" ? v : parseFloat(v);
+    const n = typeof v === "number" ? v : typeof v === "string" ? parseFloat(v) : NaN;
     return Number.isFinite(n) ? Math.min(1, Math.max(0, n)) : 0.5;
   }),
   interpretation_group: z.any().optional().transform((v) => (v == null ? null : String(v))),
@@ -64,18 +64,24 @@ function stripCodeFences(raw: string): string {
 function parseJsonLenient(raw: string): unknown {
   const cleaned = stripCodeFences(raw);
   try {
-    return JSON.parse(cleaned);
+    return JSON.parse(cleaned) as unknown;
   } catch {
     const objMatch = cleaned.match(/\{[\s\S]*\}/);
     if (objMatch) {
-      try { return JSON.parse(objMatch[0]); } catch { /* fall through */ }
+      try { return JSON.parse(objMatch[0]) as unknown; } catch { /* fall through */ }
     }
     const arrMatch = cleaned.match(/\[[\s\S]*\]/);
     if (arrMatch) {
-      try { return JSON.parse(arrMatch[0]); } catch { /* fall through */ }
+      try { return JSON.parse(arrMatch[0]) as unknown; } catch { /* fall through */ }
     }
     throw new Error(`Failed to parse JSON from LLM response:\n${cleaned.slice(0, 2000)}`);
   }
+}
+
+function readEdges(parsed: unknown): unknown[] {
+  if (parsed == null || typeof parsed !== "object") return [];
+  const edges = (parsed as Record<string, unknown>).edges;
+  return Array.isArray(edges) ? edges : [];
 }
 
 export async function extractRelations(
@@ -105,12 +111,7 @@ export async function extractRelations(
   // from the same batch. We rechecked this after seeing real documents where
   // a single unrelated bad edge caused entirely correct results to be thrown
   // away — the old throw-on-first-failure approach from a few commits ago.
-  const rawEdges: unknown[] =
-    parsed != null &&
-    typeof parsed === "object" &&
-    Array.isArray((parsed as any).edges)
-      ? (parsed as any).edges
-      : [];
+  const rawEdges = readEdges(parsed);
 
   const nodeIds = new Set(nodes.map((n) => n.id));
   const validEdges: z.infer<typeof RelationProposalSchema>[] = [];
@@ -164,7 +165,7 @@ export async function extractRelations(
       id: `edge-llm-${i}`,
       source_node_id: edge.source_node_id,
       target_node_id: edge.target_node_id,
-      relation: edge.relation as EdgeRelation,
+      relation: edge.relation,
       extraction_confidence: edge.extraction_confidence,
       evidence_span: edge.evidence_span,
       ...(edge.interpretation_group != null

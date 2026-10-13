@@ -1,4 +1,5 @@
 import type { LLMClient } from "./llm-client.js";
+import { sleep } from "../runtime.js";
 
 export function estimateTokens(text: string): number {
   return Math.ceil(text.length / 4);
@@ -40,7 +41,7 @@ export class RateLimitedClient implements LLMClient {
       const oldest = this.window[0];
       if (!oldest) break;
       const waitMs = oldest.timestamp + 60_000 - now + 100;
-      await new Promise<void>((resolve) => setTimeout(resolve, waitMs));
+      await sleep(waitMs);
     }
 
     this.window.push({ timestamp: Date.now(), cost });

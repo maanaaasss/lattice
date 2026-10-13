@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { segmentText } from "../src/segmentation/segment.js";
 import { OpenAICompatibleClient } from "../src/extraction/llm-client.js";
+import { nodeTransport } from "./node-transport.js";
 import { classifySegments } from "../src/extraction/classify.js";
 import {
   derivePrecedesEdges,
@@ -16,7 +17,7 @@ async function main() {
   const baseUrl = process.env.LLM_BASE_URL!;
   const model = process.env.LLM_MODEL!;
 
-  const client = new OpenAICompatibleClient({ baseUrl, apiKey, model, maxTokens: 4096 });
+  const client = new OpenAICompatibleClient({ transport: nodeTransport, baseUrl, apiKey, model, maxTokens: 4096 });
 
   console.log("--- Segmenting ---");
   const segments = segmentText(inputText);

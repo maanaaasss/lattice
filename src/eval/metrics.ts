@@ -112,7 +112,7 @@ export function classificationReport(
 ): ClassificationReport {
   const alignment = alignNodes(gold, nodes);
 
-  const predictedForGold: Array<string | undefined> = new Array(gold.length);
+  const predictedForGold = new Array<string | undefined>(gold.length);
   for (const { goldIndex, nodeIndex } of alignment.matched) {
     predictedForGold[goldIndex] = nodes[nodeIndex].type;
   }
