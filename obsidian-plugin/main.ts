@@ -224,7 +224,10 @@ class SemanticIRSettingTab extends PluginSettingTab {
   }
 
   // Declared settings for Obsidian 1.13+ (searchable settings home).
-  // Older versions ignore this and fall back to display() below.
+  // Older versions ignore this and fall back to display() below. Callback
+  // params are annotated explicitly so this file stays free of `any` even
+  // when the types resolve against an older obsidian (e.g. the root's 1.8.7
+  // peer pin, which predates this API).
   getSettingDefinitions(): SettingDefinitionItem[] {
     return [
       {
@@ -241,7 +244,7 @@ class SemanticIRSettingTab extends PluginSettingTab {
         desc: SETTING_STRINGS.apiKey.desc,
         // The declarative text control can't mask the input, so the key row
         // is rendered imperatively with a password field.
-        render: (setting) => this.addApiKeyControl(setting),
+        render: (setting: Setting) => this.addApiKeyControl(setting),
       },
       {
         name: SETTING_STRINGS.model.name,
@@ -262,7 +265,7 @@ class SemanticIRSettingTab extends PluginSettingTab {
           defaultValue: DEFAULT_SETTINGS.tpmLimit,
           min: 1,
           step: 100,
-          validate: (value) =>
+          validate: (value: number) =>
             Number.isFinite(value) && value > 0 ? undefined : "Enter a positive number.",
         },
       },

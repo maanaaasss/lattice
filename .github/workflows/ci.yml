@@ -23,14 +23,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # The type-aware lint of obsidian-plugin/main.ts resolves `obsidian`
-      # types from the plugin's own node_modules (1.13, which has the
-      # declarative settings API); without this it falls back to the
-      # root's 1.8.7 peer pin and reports false positives.
-      - name: Install plugin dependencies
-        run: npm ci
-        working-directory: obsidian-plugin
-
+      # Deliberately does NOT install obsidian-plugin deps: linting with only
+      # the root install (obsidian 1.8.7, no declarative settings API) matches
+      # the community-review environment and keeps main.ts free of `any` under
+      # both type resolutions. The plugin job still typechecks against 1.13.
       - name: Typecheck
         run: npm run typecheck
 
