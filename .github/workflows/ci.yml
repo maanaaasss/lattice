@@ -47,10 +47,17 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: obsidian-plugin/package-lock.json
+          cache-dependency-path: |
+            package-lock.json
+            obsidian-plugin/package-lock.json
 
-      - name: Install dependencies
+      - name: Install root dependencies
         run: npm ci
+        working-directory: ${{ github.workspace }}
+
+      - name: Install plugin dependencies
+        run: npm ci
+        working-directory: obsidian-plugin
 
       - name: Typecheck
         run: npm run typecheck
