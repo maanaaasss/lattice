@@ -1,7 +1,7 @@
 {
   "id": "semantic-ir-compiler",
   "name": "Lattice",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "minAppVersion": "1.0.0",
   "description": "Compiles a note into a navigable semantic IR (nodes, typed edges, evidence).",
   "author": "lattice",

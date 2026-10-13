@@ -18,18 +18,17 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+          cache: npm
 
-      - name: Install root dependencies
+      # Build exactly the way community review rebuilds: a root-only install
+      # and the root build script, so the published main.js is byte-identical
+      # to what a clean checkout produces.
+      - name: Install dependencies
         run: npm ci
 
-      - name: Install plugin dependencies
-        run: npm ci
-        working-directory: obsidian-plugin
-
-      - name: Build plugin
+      - name: Build
         run: npm run build
-        working-directory: obsidian-plugin
 
       - name: Attest build provenance
         uses: actions/attest-build-provenance@v2
